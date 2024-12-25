@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { TextField, InputAdornment } from "@mui/material";
+import { Search } from "lucide-react";
+import "../dist/app.css"
 
 const Popup = () => {
   const [count, setCount] = useState(0);
@@ -34,6 +37,25 @@ const Popup = () => {
 
   return (
     <>
+      <div id="search">
+        <div className="font-mono bg-slate-600 text-lg">test</div>
+        <TextField
+          variant="outlined"
+          placeholder="搜索..."
+          fullWidth
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start" className="flex">
+                <Search />
+              </InputAdornment>
+            ),
+          }}
+        />
+      </div>
+
+      <div id="serachResult"></div>
+      <div id="setting"></div>
+
       <ul style={{ minWidth: "700px" }}>
         <li>Current URL: {currentURL}</li>
         <li>Current Time: {new Date().toLocaleTimeString()}</li>

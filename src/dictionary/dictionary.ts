@@ -1,9 +1,15 @@
 type lang = "zh"|"en"
 
+export interface translation {
+    title: string[];
+    paraphrase: string[];
+    source: string;
+}
+
 export interface translationRequest {
     queryWord: string;
     sourceLang: lang;
-    targetLang: lang
+    targetLang: lang;
 }
 
 export interface translationResult {
@@ -15,7 +21,7 @@ export interface translationResult {
     voice:any;
     example_sentence: {
         sentence_raw: string;
-        sentence_translation: string
+        sentence_translation: string;
     }[]
 }
 
@@ -25,5 +31,5 @@ export interface dictionary {
 }
 
 export interface dictionaryOption {
-    maxexample: number
+    maxexample: number;
 }

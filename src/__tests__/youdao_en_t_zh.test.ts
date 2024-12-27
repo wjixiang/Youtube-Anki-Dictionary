@@ -4,7 +4,7 @@ import Youdao from "../dictionary/en_to_zh[web]/youdao_en_t_zh";
 
 describe(Youdao,()=>{
     const testTranslationReq:translationRequest = {
-        queryWord: "high",
+        queryWord: "apple",
         sourceLang: "en",
         targetLang: "zh"
     }
@@ -16,11 +16,11 @@ describe(Youdao,()=>{
     const youdao = new Youdao(dictOption)
     let rowHtmlContent:any
     let main_paraphrase
-    let tranRes 
+    let WebParaphrase 
+    let proParaphrase
 
     it("get original web translation result",async()=>{
         rowHtmlContent = await youdao.fetchTranslation(testTranslationReq.queryWord)
-        console.log(rowHtmlContent)
         expect(rowHtmlContent)
     })
 
@@ -29,4 +29,16 @@ describe(Youdao,()=>{
         console.log(main_paraphrase)
         expect(main_paraphrase.length > 0).toBe(true)
     })
+
+    it("get web paraphrase",()=>{
+        WebParaphrase = youdao.getWebParaphrase(rowHtmlContent)
+        console.log(WebParaphrase)
+        expect(WebParaphrase)
+    })
+    it("get professional paraphrase",()=>{
+        proParaphrase = youdao.getProfessionalParaphrase(rowHtmlContent)
+        console.log("professional paraphrase:",proParaphrase)
+        expect(proParaphrase)
+    })
+
 })

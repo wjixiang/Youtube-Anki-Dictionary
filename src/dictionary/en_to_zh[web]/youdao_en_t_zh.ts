@@ -47,6 +47,37 @@ export default class youdao_en_t_zh implements dictionary {
         }).get() as string[]
     }
 
+    getWebParaphrase = ($:cheerio.Root) =>{
+        const result = $("#tWebTrans").map((index,element)=>{
+            const title = $(element).find(".title").find("span").map((index,element)=>{
+                return $(element).text().replace("\n","").trim()
+            }).get()
+
+            const paraphrase = $(element).find(".collapse-content").text().replace("\n","").trim()
+
+            return {
+                title:title,
+                paraphrase:paraphrase
+            }
+        })
+        
+        return result.get()
+    }
+
+    getProfessionalParaphrase = ($:cheerio.Root)=>{
+        const result = $("#tPETrans").find("li").map((index,element)=>{
+            const title = $(element).find(".title").text().trim()
+            const paraphrase = $(element).find("p").text()
+            
+            return {
+                title:title,
+                paraphrase:paraphrase
+            }
+        })
+        
+        return result.get()
+    }
+
     async translate(req: translationRequest): Promise<translationResult|null> {  
  
 

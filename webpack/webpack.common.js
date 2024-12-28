@@ -27,12 +27,25 @@ module.exports = {
             {
                 test: /\.tsx?$/,
                 use: "ts-loader",
-                exclude: /node_modules/,
+                exclude: [
+                    /node_modules/,
+                    /src\/__tests__/,
+                    /\.test\.tsx?$/
+                ],
             },
             {  
                 test: /\.css$/,  
                 use: ['style-loader', 'css-loader', 'postcss-loader']  
-            } 
+            } ,
+            {
+                test: /\.ts?$/,
+                use: "ts-loader",
+                exclude: [
+                    /node_modules/,
+                    /src\/__tests__/,
+                    /\.test\.ts?$/
+                ],
+            },
         ],
     },
     resolve: {

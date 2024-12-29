@@ -2,14 +2,19 @@ import React, { useEffect, useState } from "react";
 import { TextField, InputAdornment } from "@mui/material";
 import { Search } from "lucide-react";
 import "../dist/app.css"
+import youdao_en_t_zh from "../dictionary/en_to_zh[web]/youdao_en_t_zh";
+import { dictionaryOption } from "../dictionary/dictionary";
 
-export const SearchPanel = () => {
+export const SearchPanel:React.FC<{
+  dictOption:dictionaryOption
+}> = (props) => {
   const [searchStr,setSearchStr] = useState("");
 
-  const serachWord = (event:React.KeyboardEvent<HTMLInputElement>)=>{
-    console.log("hello")
+  const searchWord = (event:React.KeyboardEvent<HTMLInputElement>)=>{
     if(event.key === 'Enter'){
       console.log(`search for ${searchStr}`)
+      const Youdao_en_t_zh = new youdao_en_t_zh(props.dictOption)
+      // const searchResult = Youdao_en_t_zh.translate()
     }
   }
 
@@ -22,7 +27,7 @@ export const SearchPanel = () => {
           placeholder="搜索..."
           value={searchStr}
           onChange={(e) => setSearchStr(e.target.value)}
-          onKeyDown={serachWord}
+          onKeyDown={searchWord}
           fullWidth
           InputProps={{
             startAdornment: (

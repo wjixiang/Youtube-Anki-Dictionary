@@ -33,3 +33,9 @@ export interface dictionary {
 export interface dictionaryOption {
     maxexample: number;
 }
+
+export interface pronunciation {
+    name: string;
+    phonetic: string;
+    voiceLink: string|null;
+}

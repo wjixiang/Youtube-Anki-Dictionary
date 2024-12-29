@@ -3,36 +3,39 @@ module.exports = {
         {  
             displayName: 'node',  
             testEnvironment: 'node',  
-            // roots: ['src'],  
             transform: {  
                 '^.+\\.ts$': 'ts-jest',  
             },  
             testMatch: [  
                 '<rootDir>/src/__tests__/**/*.test.ts'  
             ],  
-            transformIgnorePatterns: [  
-                "node_modules/(?!(cheerio|parse5|entities|dom-serializer|domelementtype|domhandler|domutils|htmlparser2|nth-check|boolbase)/)"  
-            ]  
+            // transformIgnorePatterns: [  
+            //     // 注意这里的修改  
+            //     "node_modules/(?!cheerio|parse5|dom-serializer|domhandler|domutils|htmlparser2|entities|css-select|css-what|nth-check|boolbase)/"  
+            // ],  
+            moduleNameMapper: {  
+                '^(\\.{1,2}/.*)\\.js$': '$1',  
+            }  
         },  
         {  
             displayName: 'jsdom',  
             testEnvironment: 'jsdom',  
-            // roots: ['src'],  
             transform: {  
-                '^.+\\.tsx$': 'ts-jest',  
+                '^.+\\.(tsx|ts)$': 'ts-jest',  
             },  
             testMatch: [  
                 '<rootDir>/src/__tests__/**/*.test.tsx'  
             ],  
             moduleNameMapper: {  
-                '\\.(css|less|scss|sass)$': 'identity-obj-proxy'  
-            },  
-            // setupFilesAfterEnv: [  
-            //     '@testing-library/jest-dom/extend-expect'  
-            // ]  
+                '\\.(css|less|scss|sass)$': 'identity-obj-proxy',  
+                '^(\\.{1,2}/.*)\\.js$': '$1',  
+            },
+            transformIgnorePatterns: [  
+                // 注意这里的修改  
+                "<rootDir>/node_modules/(?!cheerio|static).+\\.js$"
+            ], 
         }  
     ],  
-    // 全局共享配置  
     globals: {  
         'ts-jest': {  
             tsconfig: 'tsconfig.json'  

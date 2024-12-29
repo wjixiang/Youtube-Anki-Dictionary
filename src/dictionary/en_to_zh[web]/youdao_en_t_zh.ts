@@ -1,7 +1,7 @@
 import { dictionary,dictionaryOption,translationRequest, translationResult } from "../dictionary";
 import axios from "axios";
 import * as cheerio from 'cheerio'
-import { createRoot } from 'react-dom/client';
+import { pronunciation } from "../dictionary";
 
 export default class youdao_en_t_zh implements dictionary {
     option: dictionaryOption;
@@ -77,6 +77,20 @@ export default class youdao_en_t_zh implements dictionary {
         
         return result.get()
     }
+
+    fetchPronunciation = ($:cheerio.Root):pronunciation[]=>{
+        return $(".baav .pronounce").map((index,element)=>{
+            console.log($(element).text().trim())
+            const result:pronunciation = {
+                name:$(element).text()[0],
+                phonetic: $(element).first().find(".phonetic").text(),
+                voiceLink: $(element).find("a").attr("data-rel") ? `https://dict.youdao.com/dictvoice?audio=${$(element).find("a").attr("data-rel") as string}`:null
+                
+            }
+            return result
+        }).get()
+
+    } 
 
     async translate(req: translationRequest): Promise<translationResult|null> {  
  

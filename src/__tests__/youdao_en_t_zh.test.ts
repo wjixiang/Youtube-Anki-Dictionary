@@ -1,10 +1,10 @@
-import { translationRequest, dictionaryOption } from '../dictionary/dictionary';
+import { translationRequest, dictionaryOption, pronunciation } from '../dictionary/dictionary';
 import Youdao from "../dictionary/en_to_zh[web]/youdao_en_t_zh";
 
 
 describe(Youdao,()=>{
     const testTranslationReq:translationRequest = {
-        queryWord: "apple",
+        queryWord: "iris",
         sourceLang: "en",
         targetLang: "zh"
     }
@@ -18,6 +18,7 @@ describe(Youdao,()=>{
     let main_paraphrase
     let WebParaphrase 
     let proParaphrase
+    let dictVoiceLink:pronunciation[]
 
     it("get original web translation result",async()=>{
         rowHtmlContent = await youdao.fetchTranslation(testTranslationReq.queryWord)
@@ -39,6 +40,18 @@ describe(Youdao,()=>{
         proParaphrase = youdao.getProfessionalParaphrase(rowHtmlContent)
         console.log("professional paraphrase:",proParaphrase)
         expect(proParaphrase)
+    })
+
+    it("fetch pronunciation",()=>{
+        dictVoiceLink = youdao.fetchPronunciation(rowHtmlContent)
+
+        console.log("pronunciation link:",dictVoiceLink)
+        expect(dictVoiceLink).toBeDefined()
+        expect(dictVoiceLink.length>0).toBe(true)
+        expect(dictVoiceLink.map(link=>{
+            return /英|美/.test(link.name)
+        }).includes(false)).toBe(false)
+
     })
 
 })

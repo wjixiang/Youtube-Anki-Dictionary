@@ -5,9 +5,13 @@ import React from "react";
 
 const root = createRoot(document.getElementById("root")!);
 
+const temperaryDictOption = {
+  maxexample: 2
+}
+
 root.render(
   <React.StrictMode>
-    <SearchPanel />
+    <SearchPanel dictOption={temperaryDictOption}/>
   </React.StrictMode>
 );
 

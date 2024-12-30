@@ -1,15 +1,29 @@
-{
-    "compilerOptions": {
-        "strict": true,
-        "target": "es6",
-        "moduleResolution": "bundler",
-        "module": "ES6",
-        "esModuleInterop": true,
-        "sourceMap": false,
-        "rootDir": "src",
-        "outDir": "dist/js",
-        "noEmitOnError": true,
-        "jsx": "react",
-        "typeRoots": [ "node_modules/@types" ]
-    }
+{  
+    "compilerOptions": {  
+        "target": "es6",  
+        "module": "esnext",  
+        "moduleResolution": "node",  
+        "lib": ["dom", "dom.iterable", "esnext"],  
+        "jsx": "react-jsx",  
+        "sourceMap": true,  
+        "outDir": "./dist",  
+        "rootDir": "./src",  
+        "strict": true,  
+        "noImplicitAny": false,  
+        "esModuleInterop": true,  
+        "skipLibCheck": true,  
+        "forceConsistentCasingInFileNames": true,  
+        "allowSyntheticDefaultImports": true,  
+        "resolveJsonModule": true,  
+        "isolatedModules": true,  
+        "strictNullChecks": false, 
+        "noEmit": false,  
+        "noEmitOnError": false,
+        "baseUrl": ".",  // 添加这行  
+        "paths": {      // 添加这行  
+            "@/*": ["src/*"]  
+        }  
+    },  
+    "include": ["src/**/*"],  
+    "exclude": ["node_modules", "**/*.spec.ts", "**/*.test.ts"]  
 }

@@ -25,6 +25,8 @@
     "@types/cheerio": "^0.22.35",
     "axios": "^1.7.9",
     "cheerio": "^1.0.0-rc.10",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
     "lucide-react": "^0.469.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

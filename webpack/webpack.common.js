@@ -26,12 +26,20 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
-                use: "ts-loader",
+                use: [{
+                    loader: "ts-loader",
+                    options: {  
+                        transpileOnly: true, // 只转译，不做类型检查  
+                        happyPackMode: true  
+                    }
+                }],
                 exclude: [
                     /node_modules/,
+                    /__tests__/,
                     /src\/__tests__/,
                     /\.test\.tsx?$/
                 ],
+                
             },
             {  
                 test: /\.css$/,  
@@ -39,10 +47,16 @@ module.exports = {
             } ,
             {
                 test: /\.ts?$/,
-                use: "ts-loader",
+                use: [{
+                    loader: "ts-loader",
+                    options: {  
+                        transpileOnly: true, // 只转译，不做类型检查  
+                        happyPackMode: true  
+                    }
+                }],
                 exclude: [
                     /node_modules/,
-                    /src\/__tests__/,
+                    /__tests__/,
                     /\.test\.ts?$/
                 ],
             },
@@ -50,6 +64,9 @@ module.exports = {
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js"],
+        alias: {  
+            '@': path.resolve(__dirname, 'src')  
+          }  
     },
     plugins: [
         new CopyPlugin({

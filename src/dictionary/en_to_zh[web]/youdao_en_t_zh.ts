@@ -1,20 +1,22 @@
-import { dictionary,dictionaryOption,translationRequest, translationResult } from "../dictionary";
+import { dictionary,dictionaryOption,translationRequest, translationResult } from "../../dictionary";
 import axios from "axios";
 import * as cheerio from 'cheerio'
-import { pronunciation } from "../dictionary";
+import { pronounce, paraphrase } from "../../dictionary";
 
-export default class youdao_en_t_zh implements dictionary {
+export default class youdao_en_t_zh {
     option: dictionaryOption;
+    
 
     constructor(option:dictionaryOption) {
         this.option = option
     }
 
-    async displayName() {
+
+    async displayName():Promise<string> {
         return '柯林斯英汉词典';
     }
     
-    async fetchTranslation(queryWord: string) {  
+    async fetchTranslation(queryWord: string):Promise<cheerio.Root> {  
         const base = 'https://dict.youdao.com/w/';  
         const url = base + encodeURIComponent(queryWord);  
 
@@ -41,13 +43,16 @@ export default class youdao_en_t_zh implements dictionary {
         }  
     }  
     
-    getMainParaphrase = ($:cheerio.Root)=>{
-        return $("#phrsListTab").find(".trans-container").find('li').map((index,element)=>{
-            return $(element).text()
-        }).get() as string[]
+    getMainParaphrase ($:cheerio.Root):paraphrase{
+        return {
+            source: "youdao",
+            paraphrase: $("#phrsListTab").find(".trans-container").find('li').map((index,element)=>{
+                return $(element).text()
+            }).get() as string[]
+        }
     }
 
-    getWebParaphrase = ($:cheerio.Root) =>{
+    getWebParaphrase ($:cheerio.Root):paraphrase {
         const result = $("#tWebTrans").map((index,element)=>{
             const title = $(element).find(".title").find("span").map((index,element)=>{
                 return $(element).text().replace("\n","").trim()
@@ -55,33 +60,32 @@ export default class youdao_en_t_zh implements dictionary {
 
             const paraphrase = $(element).find(".collapse-content").text().replace("\n","").trim()
 
-            return {
-                title:title,
-                paraphrase:paraphrase
-            }
+            return title+ "\n" + paraphrase
         })
         
-        return result.get()
+        return {
+            source: "web",
+            paraphrase: result.get()
+        }
     }
 
-    getProfessionalParaphrase = ($:cheerio.Root)=>{
+    getProfessionalParaphrase ($:cheerio.Root):paraphrase{
         const result = $("#tPETrans").find("li").map((index,element)=>{
             const title = $(element).find(".title").text().trim()
             const paraphrase = $(element).find("p").text()
             
-            return {
-                title:title,
-                paraphrase:paraphrase
-            }
+            return title+ "\n" + paraphrase
         })
         
-        return result.get()
+        return {
+            source: "profession",
+            paraphrase: result.get()
+        }
     }
 
-    fetchPronunciation = ($:cheerio.Root):pronunciation[]=>{
+    fetchpronounce ($:cheerio.Root):pronounce[]{
         return $(".baav .pronounce").map((index,element)=>{
-            console.log($(element).text().trim())
-            const result:pronunciation = {
+            const result:pronounce = {
                 name:$(element).text()[0],
                 phonetic: $(element).first().find(".phonetic").text(),
                 voiceLink: $(element).find("a").attr("data-rel") ? `https://dict.youdao.com/dictvoice?audio=${$(element).find("a").attr("data-rel") as string}`:null
@@ -93,25 +97,82 @@ export default class youdao_en_t_zh implements dictionary {
     } 
 
     async translate(req: translationRequest): Promise<translationResult|null> {  
- 
-
+        const url = 'https://dict.youdao.com/w/' + encodeURIComponent(req.queryWord);  
+        
         try {  
-            const $ = await this.fetchTranslation(req.queryWord); 
-            console.log($(".trans-container").find("li").text())
-            const res: translationResult = {  
-                queryWord: req.queryWord,  
-                paraphrase: {
-                    main_parahrase: this.getMainParaphrase($)
-                }, 
-                phonetic: "", 
-                voice: undefined,  
-                example_sentence: []  
-            }; 
-
-            return res;  
-        } catch (err) {  
-            console.error('Translation error:', err);  
-            return null;  
+          const response = await new Promise((resolve, reject) => {  
+            chrome.runtime.sendMessage(  
+              { type: "YOUDAO_TRANSLATION", word: url },  
+              (response) => {  
+                if (chrome.runtime.lastError) {  
+                  reject(chrome.runtime.lastError);  
+                } else {  
+                  resolve(response);  
+                }  
+              }  
+            );  
+          });  
+      
+          if (!response) return null;  
+      
+          const $ = cheerio.load(response as string);  
+          return {  
+            queryWord: req.queryWord,  
+            paraphrase: {  
+              main_paraphrase: this.getMainParaphrase($)  
+            },  
+            pronounce: this.fetchpronounce($),  
+            example_sentence: []  
+          };  
+        } catch (error) {  
+          console.error('Translation error:', error);  
+          return null;  
         }  
-    }  
+      }  
+
+    // async translate(req: translationRequest): Promise<translationResult|null> {  
+    //     const base = 'https://dict.youdao.com/w/';  
+    //     const url = base + encodeURIComponent(req.queryWord); 
+    //     console.log(url)
+    //     const result = new Promise((resolve,reject)=>{
+    //         chrome.runtime.sendMessage({type:"YOUDAO_TRANSLATION",word:url},(response)=>{
+    //             console.log("send request")
+    //             const $ = cheerio.load(response)
+    //             const res: translationResult = {  
+    //                 queryWord: req.queryWord,  
+    //                 paraphrase: {
+    //                     main_paraphrase: this.getMainParaphrase($)
+    //                 }, 
+    //                 pronounce: this.fetchpronounce($),
+    //                 example_sentence: []  
+    //             }; 
+                
+    //             resolve(res)
+    //         })
+    //     })
+
+    //     result.then(()=>{
+    //         console.log("he")
+    //     })
+
+    //     return await result as translationResult
+
+    //     // try {  
+    //     //     const $ = await this.fetchTranslation(req.queryWord); 
+    //     //     // console.log($(".trans-container").find("li").text())
+    //     //     const res: translationResult = {  
+    //     //         queryWord: req.queryWord,  
+    //     //         paraphrase: {
+    //     //             main_paraphrase: this.getMainParaphrase($)
+    //     //         }, 
+    //     //         pronounce: this.fetchpronounce($),
+    //     //         example_sentence: []  
+    //     //     }; 
+
+    //     //     return res;  
+    //     // } catch (err) {  
+    //     //     console.error('Translation error:', err);  
+    //     //     return null;  
+    //     // }  
+    // }  
 }

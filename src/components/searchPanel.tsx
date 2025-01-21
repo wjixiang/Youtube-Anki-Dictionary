@@ -3,7 +3,7 @@ import { TextField, InputAdornment } from "@mui/material";
 import { Search } from "lucide-react";
 import youdao_en_t_zh from "../dictionary/en_to_zh[web]/youdao_en_t_zh";
 import { dictionaryOption, translationRequest } from "../dictionary";
-import DictContainer from "./dictonaryContainer";
+import DictContainer from "./YoudaoEZContainer";
 
 export const SearchPanel:React.FC<{
   dictOption:dictionaryOption

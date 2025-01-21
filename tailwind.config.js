@@ -8,5 +8,8 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  animation: {  
+    'slide-down': 'slideDown 5s ease-out'  
+  } 
 }
 

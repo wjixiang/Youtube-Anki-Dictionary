@@ -1,5 +1,4 @@
-import React from "react";
-import DictContainer from "../components/dictonaryContainer";
+import DictContainer from "../components/YoudaoEZContainer";
 import { render, fireEvent ,waitFor} from '@testing-library/react';  
 import { _test_TranslationReq,_test_dictOption } from "./testData";
 import youdao_en_t_zh from "../dictionary/en_to_zh[web]/youdao_en_t_zh";

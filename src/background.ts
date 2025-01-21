@@ -1,11 +1,3 @@
-function polling() {
-  // console.log("polling");
-  setTimeout(polling, 1000 * 30);
-}
-
-polling();
-
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {  
   if (request.type === "YOUDAO_TRANSLATION") {  
     fetch(request.word, {  

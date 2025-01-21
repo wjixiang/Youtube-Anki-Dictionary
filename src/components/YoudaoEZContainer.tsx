@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {  translationRequest, translationResult, paraphrase } from '../dictionary';
 import youdao_en_t_zh from "@/dictionary/en_to_zh[web]/youdao_en_t_zh";
+import { CircularProgress } from "@mui/material";
+import AudioPlayer from "./AudioPlayer";
 
 const voidTransResult:translationResult = {
     queryWord: "",
@@ -42,15 +44,31 @@ const DictContainer:React.FC<{
 
     if(isloading){
         return (
-            <div data-testid="loading">
-                loading...
+            <div data-testid="loading" className="flex justify-center">
+                <CircularProgress />
             </div>
         )
     }
 
     return (
-        <div>
-            <h1 data-testid="query-word">{transResult.queryWord}</h1>
+        <div className="transition-[height] duration-300 ease-in-out overflow-hidden">
+            <h1 data-testid="query-word" className="text-xl transition-all text-green-800">{transResult.queryWord}</h1>
+            <div id="pronounce" className="flex">
+                {transResult.pronounce.map(audio=>{
+                    return(<div className="flex items-center mr-3">
+                        <div>
+                            {audio.name}
+                        </div>
+                        <div>
+                            {audio.phonetic}
+                        </div>
+                        <AudioPlayer
+                            src={audio.voiceLink}  
+                            className=""   
+                            />  
+                    </div>)
+                })}
+            </div>
             <div id="main-paraphrase">
                 {transResult.paraphrase.main_paraphrase.paraphrase.map(e=><li>{e}</li>)}
             </div>

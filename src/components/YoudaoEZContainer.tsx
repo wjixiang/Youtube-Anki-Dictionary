@@ -3,6 +3,7 @@ import {  translationRequest, translationResult, paraphrase } from '../dictionar
 import youdao_en_t_zh from "@/dictionary/en_to_zh[web]/youdao_en_t_zh";
 import { CircularProgress } from "@mui/material";
 import AudioPlayer from "./AudioPlayer";
+import { AddToAnki } from "./AddToAnki";
 
 const voidTransResult:translationResult = {
     queryWord: "",
@@ -19,7 +20,8 @@ const voidTransResult:translationResult = {
 
 const DictContainer:React.FC<{
     dictionary: youdao_en_t_zh,
-    query: translationRequest
+    query: translationRequest,
+    sentence?: string
 }> = (props)=>{
     const [isloading,setIsLoading] = useState(true)
     const [transResult,setTransResult] = useState<translationResult>(voidTransResult)
@@ -52,7 +54,23 @@ const DictContainer:React.FC<{
 
     return (
         <div className="transition-[height] duration-300 ease-in-out overflow-hidden">
-            <h1 data-testid="query-word" className="text-xl transition-all text-green-800">{transResult.queryWord}</h1>
+            <div className="flex items-center">
+                <h1 data-testid="query-word" className="text-4xl transition-all text-green-800">{transResult.queryWord}</h1>
+                <div className="p-5">
+                    <AddToAnki 
+                        Text={props.query.queryWord} 
+                        Phonetic={transResult.pronounce[0].phonetic} 
+                        Context={props.sentence} 
+                        Paraphrase={transResult.paraphrase.main_paraphrase.paraphrase.join("<br/>")} 
+                        Translation={""} 
+                        Pronounce={{
+                            AmE: transResult.pronounce[0]?.voiceLink,
+                            BrE: transResult.pronounce[1]?.voiceLink
+                        }} 
+                        url={""}  />
+                </div>
+            </div>
+        
             <div id="pronounce" className="flex">
                 {transResult.pronounce.map(audio=>{
                     return(<div className="flex items-center mr-3">

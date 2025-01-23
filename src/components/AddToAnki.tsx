@@ -5,8 +5,32 @@ import React from "react";
 
 
 export const AddToAnki:React.FC<AnkiSyncData> = (props) => {
-    const syncToAnki = (syncData:AnkiSyncData) => {
-        console.log(syncData)
+
+    const syncToAnki = ( ) => {
+        
+        chrome.runtime.sendMessage({ type: 'START_AUDIO_CAPTURE'}, response => {  
+            if (response.success) {  
+                console.log('Recording started');  
+            } else {  
+                console.error('Failed to start recording:', response.error);  
+            }  
+        }); 
+
+        setTimeout(()=>{
+             // 停止录制  
+            chrome.runtime.sendMessage({ 
+                type: 'STOP_AUDIO_CAPTURE'
+             }, response => {  
+                if (response.success) {  
+                    console.log('Recording stopped');  
+                } else {  
+                    console.error('Failed to stop recording:', response.error);  
+                }  
+            });  
+        },10000)
+
+
+
         chrome.runtime.sendMessage({  
             type: 'ANKI_SYNC',  
             data: {  
@@ -30,7 +54,7 @@ export const AddToAnki:React.FC<AnkiSyncData> = (props) => {
         <CirclePlus
             size={25}
             color="#37AFE1"
-            onClick={()=>syncToAnki(props)}
+            onClick={()=>syncToAnki()}
         />
     </>)
 }

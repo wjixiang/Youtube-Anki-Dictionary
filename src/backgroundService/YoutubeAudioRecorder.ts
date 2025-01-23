@@ -33,24 +33,14 @@ export default class YouTubeAudioRecorder {
     
     async recordTab( ) {   //streamId:any
         const config = {  
-            video: {  
-                mandatory: {  
-                    chromeMediaSourceId: streamId,  
-                    chromeMediaSource: "tab"  
-                }  
-            },  
-            audio: {  
-                mandatory: {  
-                    chromeMediaSourceId: streamId,  
-                    chromeMediaSource: "tab",  
-                }  
-            }  
+            video: true,  
+            audio: true
         };  
     
         try {  
             console.log("in recorder devices:",this.navigator.mediaDevices)
 
-            const stream = await this.navigator.mediaDevices.getUserMedia(config as MediaStreamConstraints) ;  
+            const stream = await this.navigator.mediaDevices.getUserMedia(config) ;  
             
             // 创建一个新的 MediaStream，只包含音频轨道用于播放  
             const audioStream = new MediaStream(stream.getAudioTracks());  

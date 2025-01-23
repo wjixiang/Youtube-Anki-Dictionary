@@ -1,15 +1,23 @@
 // background.ts  
 import BgAnkiConnect from "./backgroundService/bgAnkiConnect";  
 import BgTranslationService from "./backgroundService/bgTranslationService";  
+import YouTubeAudioRecorder from "./backgroundService/YoutubeAudioRecorder";  
+
+export interface startRecordReq {  
+    type: "START_AUDIO_CAPTURE";  
+    streamId: any;   
+}  
 
 class BackgroundService {  
     private ankiSync: BgAnkiConnect;  
     private translationService: BgTranslationService;  
+    private recorder: YouTubeAudioRecorder;  
 
     constructor() {  
         this.ankiSync = new BgAnkiConnect();  
         this.translationService = new BgTranslationService();  
         this.initMessageListeners();  
+        this.recorder = new YouTubeAudioRecorder(navigator);  
     }  
 
     private initMessageListeners() {  
@@ -20,6 +28,25 @@ class BackgroundService {
                     break;  
                 case "ANKI_SYNC":  
                     this.handleAnkiSync(request, sendResponse);  
+                    break;  
+                case "START_AUDIO_CAPTURE":  
+                    // this.startTabCapture()
+                    chrome.tabs.query({ currentWindow: !0, active: !0 }, (e) => {  
+                        const n = e[0];  
+                        chrome.tabCapture.getMediaStreamId({ consumerTabId: n.id }, (streamId) => {  
+                            chrome.tabs.sendMessage(n.id, {  
+                                type: "tabRecord",  
+                                streamId: streamId,  
+                                tabId: n.id  
+                            });  
+                        });             
+                    });  
+                    break;  
+                case "STOP_AUDIO_CAPTURE":  
+                    chrome.tabs.query({ currentWindow: !0, active: !0 }, (e) => {  
+                        const n = e[0];  
+                        chrome.tabs.sendMessage(n.id, { type: "stopRecording" });  
+                    });  
                     break;  
                 default:  
                     console.warn('Unknown message type:', request.type);  
@@ -69,6 +96,19 @@ class BackgroundService {
             });  
         }  
     }  
+
+    private async startTabCapture() {
+        try {
+            console.log("ready to tabcapure")
+            chrome.tabCapture.capture({},(stream)=>{
+                console.log("use tabCapture",stream)
+            })
+            // chrome.tabCapture.getCapturedTabs()
+        } catch (error) {
+            
+        }
+    }
+    
 }  
 
 // 初始化后台服务  

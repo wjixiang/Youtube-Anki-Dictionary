@@ -13,7 +13,7 @@ const voidTransResult:translationResult = {
             paraphrase: []
         },
         other_paraphrase: undefined
-    },
+    }, 
     pronounce: [],
     example_sentence: []
 }

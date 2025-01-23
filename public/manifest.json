@@ -29,19 +29,29 @@
   },
   "content_security_policy": {  
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"  
+    
   },
   "permissions": [
     "storage",
     "webRequest",
     "activeTab",
     "scripting",
-    "notifications"
+    "notifications",
+    "tabCapture",
+    "tabs",
+    "desktopCapture",
+    "downloads"
   ],
 
   "host_permissions": [
-    "<all_urls>"
+    "<all_urls>",
+    "about:blank"  
   ],
   "sandbox": {  
     "pages": ["sandbox.html"]  
-  } 
+  },
+  "web_accessible_resources": [{  
+    "resources": ["audio-player.html", "audio-player.js"],  
+    "matches": ["<all_urls>"]  
+  }] 
 }

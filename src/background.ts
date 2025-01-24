@@ -61,15 +61,19 @@ class BackgroundService {
                     }
 
                 case "STOP_AUDIO_CAPTURE":  
-                    chrome.runtime.sendMessage({ type: 'stopRecording', tabId: this.currentTabId}, response => {  
-                        if (response.success) {  
-                            console.log('stop captured tabId successfully');  
-                        } else {  
-                            console.error('Failed to stop recording:', response.error);  
-                        }  
-                    }); 
-
-                    sendResponse({ success: true });  
+                    try {
+                        chrome.runtime.sendMessage({ type: "stopRecording" },(response)=>{
+                            if(response.success){
+                                sendResponse({ success: true }); 
+                            }else{
+                                sendResponse({ success: false, error: `send capture request failed` });  
+                            }
+                        }); 
+                        
+                    } catch (error) {
+                        console.error(error)
+                        sendResponse({ success: false, error: `send capture request failed` });  
+                    } 
                     break;  
                 default:  
                     console.warn('Unknown message type:', request.type);  

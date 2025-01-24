@@ -61,6 +61,7 @@ class recorder {
                 sendResponse({success: true});  
             }  
             if(request.type == "stopRecording") {  
+                console.log("trying to stop recording")
                 this.mediaRecorder.stop();  
                 this.state = "stop"
                 sendResponse("stopRecording");  

@@ -12,6 +12,7 @@ class BackgroundService {
     private ankiSync: BgAnkiConnect;  
     private translationService: BgTranslationService;  
     private recorder: YouTubeAudioRecorder;  
+    private currentTabId: number;
 
     constructor() {  
         this.ankiSync = new BgAnkiConnect();  
@@ -31,22 +32,44 @@ class BackgroundService {
                     break;  
                 case "START_AUDIO_CAPTURE":  
                     // this.startTabCapture()
-                    chrome.tabs.query({ currentWindow: !0, active: !0 }, (e) => {  
-                        const n = e[0];  
-                        chrome.tabCapture.getMediaStreamId({ consumerTabId: n.id }, (streamId) => {  
-                            chrome.tabs.sendMessage(n.id, {  
-                                type: "tabRecord",  
-                                streamId: streamId,  
-                                tabId: n.id  
-                            });  
-                        });             
+                    chrome.tabs.query({ currentWindow: !0, active: !0 }, async (e) => {  
+                        this.currentTabId = e[0].id;  
+                        await chrome.windows.create({ url: chrome.runtime.getURL("recorder.html") });
+                        console.log("recording tab has been activitated, tabID:",this.currentTabId)                
                     });  
+
+                    sendResponse({ success: true });  
                     break;  
+                case "SEND_CAPTURE_REQ":
+                    try {
+                        console.log("recording tab loading complete, sending capture request")
+                        // chrome.tabs.sendMessage(this.currentTabId, {  
+                        //     type: "tabRecord",  
+                        //     tabId: this.currentTabId
+                        // });  
+                        chrome.runtime.sendMessage({ type: 'tabRecord', tabId: this.currentTabId}, response => {  
+                            if (response.success) {  
+                                console.log('request captured tabId successfully');  
+                            } else {  
+                                console.error('Failed to start recording:', response.error);  
+                            }  
+                        }); 
+
+                        sendResponse({ success: true });  
+                    } catch (error) {
+                        sendResponse({ success: false, error: `send capture request failed:${error}` });  
+                    }
+
                 case "STOP_AUDIO_CAPTURE":  
-                    chrome.tabs.query({ currentWindow: !0, active: !0 }, (e) => {  
-                        const n = e[0];  
-                        chrome.tabs.sendMessage(n.id, { type: "stopRecording" });  
-                    });  
+                    chrome.runtime.sendMessage({ type: 'stopRecording', tabId: this.currentTabId}, response => {  
+                        if (response.success) {  
+                            console.log('stop captured tabId successfully');  
+                        } else {  
+                            console.error('Failed to stop recording:', response.error);  
+                        }  
+                    }); 
+
+                    sendResponse({ success: true });  
                     break;  
                 default:  
                     console.warn('Unknown message type:', request.type);  

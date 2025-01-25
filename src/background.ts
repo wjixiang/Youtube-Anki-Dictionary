@@ -1,6 +1,8 @@
 // background.ts  
 import BgAnkiConnect from "./backgroundService/bgAnkiConnect";  
 import BgTranslationService from "./backgroundService/bgTranslationService";  
+import TabRecorderService from "./backgroundService/bgRecorder/bgTabRecorderService";
+import OffScreenRecorderService from "./backgroundService/bgRecorder/bgOffScreenService";
 
 
 export interface startRecordReq {  
@@ -11,12 +13,12 @@ export interface startRecordReq {
 class BackgroundService {  
     private ankiSync: BgAnkiConnect;  
     private translationService: BgTranslationService;  
-    
-    private currentTabId: number;
+    private recorderService: TabRecorderService | OffScreenRecorderService;
 
     constructor() {  
         this.ankiSync = new BgAnkiConnect();  
         this.translationService = new BgTranslationService();  
+        this.recorderService = new TabRecorderService()
         this.initMessageListeners();  
     }  
 
@@ -30,30 +32,13 @@ class BackgroundService {
                     this.handleAnkiSync(request, sendResponse);  
                     break;  
                 case "START_AUDIO_CAPTURE":  
-                    // this.startTabCapture()
-                    chrome.tabs.query({ currentWindow: !0, active: !0 }, async (e) => {  
-                        this.currentTabId = e[0].id;  
-                        await chrome.windows.create({ url: chrome.runtime.getURL("recorder.html") });
-                        console.log("recording tab has been activitated, tabID:",this.currentTabId)                
-                    });  
-
+                    this.recorderService.startCapture()
                     sendResponse({ success: true });  
                     break;  
                 case "SEND_CAPTURE_REQ":
                     try {
-                        console.log("recording tab loading complete, sending capture request")
-                        // chrome.tabs.sendMessage(this.currentTabId, {  
-                        //     type: "tabRecord",  
-                        //     tabId: this.currentTabId
-                        // });  
-                        chrome.runtime.sendMessage({ type: 'tabRecord', tabId: this.currentTabId}, response => {  
-                            if (response.success) {  
-                                console.log('request captured tabId successfully');  
-                            } else {  
-                                console.error('Failed to start recording:', response.error);  
-                            }  
-                        }); 
-
+                        console.log("recording tab loading complete, sending capture request")  
+                        this.recorderService.sendCaptureReq()
                         sendResponse({ success: true });  
                     } catch (error) {
                         sendResponse({ success: false, error: `send capture request failed:${error}` });  
@@ -61,14 +46,7 @@ class BackgroundService {
 
                 case "STOP_AUDIO_CAPTURE":  
                     try {
-                        chrome.runtime.sendMessage({ type: "stopRecording" },(response)=>{
-                            if(response.success){
-                                sendResponse({ success: true }); 
-                            }else{
-                                sendResponse({ success: false, error: `send capture request failed` });  
-                            }
-                        }); 
-                        
+                        this.recorderService.stopCapture(sendResponse)     
                     } catch (error) {
                         console.error(error)
                         sendResponse({ success: false, error: `send capture request failed` });  
@@ -78,7 +56,7 @@ class BackgroundService {
                     console.warn('Unknown message type:', request.type);  
                     sendResponse({ success: false, error: 'Unknown message type' });  
             }  
-            return true; // 保持消息通道打开  
+            return true; // keep channel opening
         });  
     }  
 
@@ -121,24 +99,9 @@ class BackgroundService {
                 error: error instanceof Error ? error.message : 'Unknown error'   
             });  
         }  
-    }  
-
-    private async startTabCapture() {
-        try {
-            console.log("ready to tabcapure")
-            chrome.tabCapture.capture({},(stream)=>{
-                console.log("use tabCapture",stream)
-            })
-            // chrome.tabCapture.getCapturedTabs()
-        } catch (error) {
-            
-        }
-    }
-    
+    }      
 }  
 
-// 初始化后台服务  
+// initiate background service  
 const backgroundService = new BackgroundService();  
 
-// 导出服务实例（如果需要）  
-export default backgroundService;

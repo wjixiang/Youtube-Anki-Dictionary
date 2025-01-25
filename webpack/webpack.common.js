@@ -10,7 +10,8 @@ module.exports = {
       background: path.join(srcDir, 'background.ts'),
       content_script: path.join(srcDir, 'content_script.tsx'),
       youtubeHelper: path.join(srcDir, 'youtubeHelper.tsx'),
-      tabRecorder: path.join(srcDir, "tabRecorder.ts")
+      tabRecorder: path.join(srcDir, "tabRecorder.ts"),
+      offscreenRecorder: path.join(srcDir, "offscreenRecorder.ts")
     },
     output: {
         path: path.join(__dirname, "../dist/js"),

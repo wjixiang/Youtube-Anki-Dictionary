@@ -1,5 +1,5 @@
 
-class recorder {
+class tabRecorder {
     mediaRecorder: MediaRecorder;
     state: "recording" | "stop";
     recordedChunks: any[];
@@ -64,9 +64,9 @@ class recorder {
             }  
             if(request.type == "stopRecording") {  
                 console.log("trying to stop recording")
-                this.mediaRecorder.stop();  
+                this.mediaRecorder.stop()
                 this.state = "stop"
-                sendResponse("stopRecording");  
+                sendResponse({success: true});  
             }  
         });
 
@@ -93,9 +93,10 @@ class recorder {
         downloadLink.href = url;  
         downloadLink.download = `recording-${new Date().toISOString()}.webm`;  
         downloadLink.click();  
-        URL.revokeObjectURL(url);       
+        URL.revokeObjectURL(url);   
+        window.close()    
 }  
     
 }
 
-new recorder()
+new tabRecorder()

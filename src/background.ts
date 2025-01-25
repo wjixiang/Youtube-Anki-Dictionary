@@ -1,7 +1,7 @@
 // background.ts  
 import BgAnkiConnect from "./backgroundService/bgAnkiConnect";  
 import BgTranslationService from "./backgroundService/bgTranslationService";  
-import YouTubeAudioRecorder from "./backgroundService/YoutubeAudioRecorder";  
+
 
 export interface startRecordReq {  
     type: "START_AUDIO_CAPTURE";  
@@ -11,14 +11,13 @@ export interface startRecordReq {
 class BackgroundService {  
     private ankiSync: BgAnkiConnect;  
     private translationService: BgTranslationService;  
-    private recorder: YouTubeAudioRecorder;  
+    
     private currentTabId: number;
 
     constructor() {  
         this.ankiSync = new BgAnkiConnect();  
         this.translationService = new BgTranslationService();  
         this.initMessageListeners();  
-        this.recorder = new YouTubeAudioRecorder(navigator);  
     }  
 
     private initMessageListeners() {  

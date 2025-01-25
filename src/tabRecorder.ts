@@ -15,7 +15,8 @@ class recorder {
                 console.log("start recording tab:",request.tabId)  
 
                 chrome.tabCapture.getMediaStreamId({ targetTabId: request.tabId }, async (id) => {
-                    const media = await navigator.mediaDevices.getUserMedia({
+
+                    const config = {
                         audio: {
                             mandatory: {
                                 chromeMediaSource: "tab",
@@ -28,9 +29,10 @@ class recorder {
                                 chromeMediaSourceId: id,
                             },
                         },
-                    });
+                    }
+                    const media = await navigator.mediaDevices.getUserMedia(config as MediaStreamConstraints);
 
-                    // 设置录制器  
+                    // preset recorder 
                     this.mediaRecorder = new MediaRecorder(media, {  
                         mimeType: 'video/webm',  
                         audioBitsPerSecond: 128000  

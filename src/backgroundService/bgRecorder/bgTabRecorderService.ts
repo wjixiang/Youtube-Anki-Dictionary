@@ -1,25 +1,31 @@
+import { audioDataFetchReq } from '../../tabRecorder';
 export interface recorderService {  
     startCapture: () => void;  
     sendCaptureReq: () => void;  
     stopCapture: (arg0: any) => void;  
+    // getCaptureState: (arg0: any) => void;  
 }  
 
 export default class TabRecorderService implements recorderService {  
     currentTabId: number;  
-    
-    
 
     async startCapture() {  
         try {  
             
             chrome.tabs.query({ currentWindow: !0, active: !0 }, async (e) => {  
                 this.currentTabId = e[0].id;  
-                chrome.tabs.create({   
-                    url: chrome.runtime.getURL("recorder.html"),  
-                    active: false   
-                }, ( ) => {  
-                    console.log("recording tab has been activated, tabID:", this.currentTabId);  
-                });  
+                chrome.tabs.query({
+                    url: chrome.runtime.getURL("recorder.html")
+                }, (existTabs)=>{
+                    if(existTabs.length === 0) {
+                        chrome.tabs.create({   
+                            url: chrome.runtime.getURL("recorder.html"),  
+                            active: false   
+                        }, ( ) => {  
+                            console.log("recording tab has been activated, tabID:", this.currentTabId);  
+                        });  
+                    }
+                })
             });  
         } catch (error) {  
             throw(error);  
@@ -45,4 +51,34 @@ export default class TabRecorderService implements recorderService {
             }  
         });   
     }  
+
+    getRecordData(sendResponse: (arg0: any) => void, req: audioDataFetchReq) {
+        chrome.runtime.sendMessage({ type: "getRecordData", req: req }, (response) => {  
+            try {
+                if (response.success) {  
+                    sendResponse({ success: true});   
+                } else {  
+                    sendResponse({ success: false, error: `request to get recordData failed` });  
+                }  
+            } catch (error) {
+                console.error("get record data failed:", error, "current response:", response)
+            }
+        });  
+
+    }
+
+    async getAudioUrl(sendResponse: (arg0: any) => void, req: audioDataFetchReq) {
+        chrome.runtime.sendMessage({ type: "getAudioUrl", req: req }, (response) => {  
+            try {
+                if (response.success) {  
+                    console.log("audio URL in bgservice:", response.audioURL, response)
+                    sendResponse({ success: true , data: response.audioURL});   
+                } else {  
+                    sendResponse({ success: false, error: `request to get audioURL failed` });  
+                }  
+            } catch (error) {
+                console.error("get audio URL failed:", error, "current response:", response)
+            }
+        });  
+    }
 }

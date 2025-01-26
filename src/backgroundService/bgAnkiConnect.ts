@@ -8,6 +8,7 @@ export interface AnkiSyncData {
         AmE?: string;      // 美式发音链接  
         BrE?: string;      // 英式发音链接  
     };  
+    OST?: string;          // 原声发音
     url: string;           // 来源 URL  
     Tags?: string[];       // 可选标签  
     Difficulty?: number;   // 可选难度  
@@ -68,14 +69,24 @@ export default class BgAnkiConnect {
                 allowDuplicate: false,  
                 duplicateScope: 'deck'  
             },
-            audio: {
-                url: data.Pronounce.AmE,
-                filename: `${data.Text}.mp3`,
-                skipHash: "7e2c2f954ef6051373ba916f000168dc",
-                fields: [
-                    "Pronounce"
-                ]
-            }
+            audio: [
+                {
+                    url: data.Pronounce.AmE,
+                    filename: `${data.Text}.mp3`,
+                    skipHash: "7e2c2f954ef6051373ba916f000168dc",
+                    fields: [
+                        "Pronounce"
+                    ]
+                },
+                {
+                    path: `/Users/a123/Downloads/OST-${data.Text}.webm`,
+                    filename: `OST-${data.Text}.webm`,
+                    skipHash: "7e2c2f954ef6051373ba916f000168dc",
+                    fields: [
+                        "Pronounce"
+                    ]
+                }
+            ]
         };  
     } 
 
@@ -114,16 +125,17 @@ export default class BgAnkiConnect {
             throw new Error('Anki Connect 请求失败');  
         }  
 
+        
         const result = await response.json();  
         
         if (result.error) {  
             throw new Error(result.error);  
         }  
 
-        return result.result;  
+        return result;  
     }  
 
-    // 可选：获取 Anki 版本  
+    // 获取 Anki 版本  
     async getAnkiVersion(): Promise<string> {  
         try {  
             const version = await this.ankiRequest('version', {});  
@@ -132,5 +144,14 @@ export default class BgAnkiConnect {
             return '未知';  
         }  
     }  
+
+    async storeMedia(rootDir: string, fileName: string) {
+        const response = await this.ankiRequest("storeMediaFile",{
+            filename: fileName,
+            path: rootDir + fileName
+        })
+
+        return response
+    }
 }  
 

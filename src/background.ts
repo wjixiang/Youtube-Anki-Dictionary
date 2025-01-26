@@ -10,16 +10,19 @@ export interface startRecordReq {
     streamId: any;   
 }  
 
+const downloadDir = "/Users/a123/Downloads/"
+
 class BackgroundService {  
     private ankiSync: BgAnkiConnect;  
     private translationService: BgTranslationService;  
-    private recorderService: TabRecorderService | OffScreenRecorderService;
+    private recorderService: TabRecorderService ;
 
     constructor() {  
         this.ankiSync = new BgAnkiConnect();  
         this.translationService = new BgTranslationService();  
         this.recorderService = new TabRecorderService()
         this.initMessageListeners();  
+        this.initToolbarAction()
     }  
 
     private initMessageListeners() {  
@@ -31,6 +34,9 @@ class BackgroundService {
                 case "ANKI_SYNC":  
                     this.handleAnkiSync(request, sendResponse);  
                     break;  
+                case "STORE_ANKI_MEDIA":
+                    this.storeAnkiMeda(request,sendResponse)
+                    break;
                 case "START_AUDIO_CAPTURE":  
                     this.recorderService.startCapture()
                     sendResponse({ success: true });  
@@ -43,7 +49,14 @@ class BackgroundService {
                     } catch (error) {
                         sendResponse({ success: false, error: `send capture request failed:${error}` });  
                     }
-
+                    break;
+                case "GET_RECORD_DATA":
+                    try {
+                        this.recorderService.getRecordData(sendResponse, request.req)
+                    } catch (error) {
+                        sendResponse({ success: false, error: `get record data from tabRecorder failed:${error}` }); 
+                    }
+                    break;
                 case "STOP_AUDIO_CAPTURE":  
                     try {
                         this.recorderService.stopCapture(sendResponse)     
@@ -52,6 +65,12 @@ class BackgroundService {
                         sendResponse({ success: false, error: `send capture request failed` });  
                     } 
                     break;  
+                case "GET_AUDIO_URL":
+                    try {
+                        this.recorderService.getAudioUrl(sendResponse,request.req)
+                    } catch (error) {
+                        console.log(error)
+                    }
                 default:  
                     console.warn('Unknown message type:', request.type);  
                     sendResponse({ success: false, error: 'Unknown message type' });  
@@ -59,6 +78,15 @@ class BackgroundService {
             return true; // keep channel opening
         });  
     }  
+
+    private initToolbarAction() {
+        chrome.action.onClicked.addListener((tab) => {
+            chrome.scripting.executeScript({
+              target: {tabId: tab.id},
+              files: ['js/content_script.js']
+            });
+          });
+    }
 
     private async handleTranslation(request: any, sendResponse: any) {  
         try {  
@@ -99,7 +127,13 @@ class BackgroundService {
                 error: error instanceof Error ? error.message : 'Unknown error'   
             });  
         }  
-    }      
+    }  
+    
+    private async storeAnkiMeda(request: any, sendResponse: any){
+        const response = this.ankiSync.storeMedia(downloadDir,request.fileName)
+        sendResponse({response: response})
+    }
+    
 }  
 
 // initiate background service  

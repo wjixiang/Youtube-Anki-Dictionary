@@ -1,17 +1,36 @@
 import { AnkiSyncData } from "@/backgroundService/bgAnkiConnect";
 import { CirclePlus } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { audioDataFetchReq } from '../tabRecorder';
 
 
 export const AddToAnki:React.FC<AnkiSyncData> = (props) => {
+    const [backwardPeriodms,setBackwardPeriodms] = useState<number>(4000)
+    const [forkwardPeriodms,setForwardPeriodms] = useState<number>(4000)
 
+    useEffect(() => {
+        chrome.storage.sync.get(
+          {
+            backwardPeriodms: 4000,
+            forkwardPeriodms: 4000
+          },
+          (items) => {
+            setBackwardPeriodms(items.backwardPeriodms);
+            setForwardPeriodms(items.forkwardPeriodms);
+          }
+        );
+      }, []);
+
+    let tik = 0
     const fetchReq: audioDataFetchReq = {
-        backwardPeriodms: 3000,
-        forwardPeriodms: 3000,
-        fileName: "OST-" + props.Text + ".webm"
+        backwardPeriodms: backwardPeriodms,
+        forwardPeriodms: forkwardPeriodms,
+        fileName: "OST-" + props.Text + ".webm",
+        submitTime: Date.now()
     }
-    
+    // setInterval(()=>{
+    //     fetchReq.backwardPeriodms = fetchReq.backwardPeriodms + tik * 1000
+    // },1000)
 
     const fetchOriginalAudio = (fetchReq: audioDataFetchReq) => {
         return new Promise((resovle, reject)=>{

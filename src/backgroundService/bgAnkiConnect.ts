@@ -8,17 +8,21 @@ export interface AnkiSyncData {
         AmE?: string;      // 美式发音链接  
         BrE?: string;      // 英式发音链接  
     };  
-    OST?: string;          // 原声发音
     url: string;           // 来源 URL  
     Tags?: string[];       // 可选标签  
     Difficulty?: number;   // 可选难度  
     Deck?: string;         // 自定义牌组名称
 }  
 
+interface SyncSetting {
+    Deck: string;
+    Model: string;
+}
+
 export default class BgAnkiConnect {  
     private ankiConnectUrl = 'http://localhost:8765';  
-    private defaultDeck = 'English::Vocabulary';  
-    private defaultModel = 'English';  
+    private Deck = 'English::Vocabulary';  
+    private Model = 'English';  
 
     // 同步到 Anki  
     async syncToAnki(data: AnkiSyncData): Promise<any> {  
@@ -49,19 +53,33 @@ export default class BgAnkiConnect {
         }  
     }  
 
+    private presetSync (){
+        chrome.storage.sync.get(
+            {
+              deck: "English::Vocabulary",
+              model: "model"
+            },
+            (items) => {   
+                this.Deck = items.deck
+                this.Model = items.model
+            }
+          );
+    }
+
     // 构建 Anki 笔记  
     private buildAnkiNote(data: AnkiSyncData) {  
+        this.presetSync()
+        
         return {  
-            // 使用自定义牌组，如果没有则使用默认牌组  
-            deckName: data.Deck || this.defaultDeck,  
-            modelName: this.defaultModel,  
+            
+            deckName: this.Deck,  
+            modelName: this.Model,  
             fields: {  
                 Text: data.Text,  
                 Phonetic: data.Phonetic,  
                 Context: data.Context,  
                 Paraphrase: data.Paraphrase,  
                 Translation: data.Translation,  
-                // Pronounce: `[sound:${data.Text}.mp3]`,  
                 SourceURL: data.url  
             },  
             tags: data.Tags || ['Web-Import'],  
@@ -83,7 +101,7 @@ export default class BgAnkiConnect {
                     filename: `OST-${data.Text}.webm`,
                     skipHash: "7e2c2f954ef6051373ba916f000168dc",
                     fields: [
-                        "Pronounce"
+                        "url"
                     ]
                 }
             ]

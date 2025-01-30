@@ -1,22 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-const Options = () => {
-  const [color, setColor] = useState<string>("");
+const Options = () => { 
   const [status, setStatus] = useState<string>("");
-  const [like, setLike] = useState<boolean>(false);
+  const [backwardPeriodms,setBackwardPeriodms] = useState<number>(4000)
+  const [forkwardPeriodms,setForwardPeriodms] = useState<number>(4000)
+  const [deck,setDeck] = useState<string>("English::Vocabulary")
+  const [model,setModel] = useState<string>("English")
 
   useEffect(() => {
     // Restores select box and checkbox state using the preferences
     // stored in chrome.storage.
     chrome.storage.sync.get(
       {
-        favoriteColor: "red",
-        likesColor: true,
+        backwardPeriodms: 4000,
+        forkwardPeriodms: 4000,
+        deck: "English::Vocabulary",
+        model: "English"
       },
       (items) => {
-        setColor(items.favoriteColor);
-        setLike(items.likesColor);
+        setBackwardPeriodms(items.backwardPeriodms);
+        setForwardPeriodms(items.forkwardPeriodms);
+        setDeck(items.deck);
+        setModel(items.model);
       }
     );
   }, []);
@@ -25,8 +31,10 @@ const Options = () => {
     // Saves options to chrome.storage.sync.
     chrome.storage.sync.set(
       {
-        favoriteColor: color,
-        likesColor: like,
+        backwardPeriodms: backwardPeriodms,
+        forkwardPeriodms: forkwardPeriodms,
+        deck: deck,
+        model: model
       },
       () => {
         // Update status to let user know options were saved.
@@ -41,27 +49,35 @@ const Options = () => {
 
   return (
     <>
+      
       <div>
-        Favorite color:{" "}
-        <select
-          value={color}
-          onChange={(event) => setColor(event.target.value)}
-        >
-          <option value="red">red</option>
-          <option value="green">green</option>
-          <option value="blue">blue</option>
-          <option value="yellow">yellow</option>
-        </select>
+        backward play time(ms)
+        <input 
+          value={backwardPeriodms}
+          onChange={(event) => setBackwardPeriodms(Number(event.target.value))}
+          />
+      </div>
+
+      <div>
+        forward play time(ms)
+        <input 
+          value={forkwardPeriodms}
+          onChange={(event) => setForwardPeriodms(Number(event.target.value))}
+          />
       </div>
       <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={like}
-            onChange={(event) => setLike(event.target.checked)}
+        Anki Deck
+        <input 
+          value={deck}
+          onChange={(event) => setDeck(event.target.value)}
           />
-          I like colors.
-        </label>
+      </div>
+      <div>
+        Anki Model
+        <input 
+          value={model}
+          onChange={(event) => setModel(event.target.value)}
+          />
       </div>
       <div>{status}</div>
       <button onClick={saveOptions}>Save</button>

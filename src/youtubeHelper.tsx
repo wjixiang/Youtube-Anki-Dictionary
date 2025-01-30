@@ -63,6 +63,7 @@ class WordPopupManager {
   constructor() {  
     this.initMouseTracking();  
     this.initKeyboardHandlers();  
+    this.startSubtitleEmit();
   }  
 
   private initMouseTracking() {  
@@ -265,9 +266,38 @@ class WordPopupManager {
   
     return null;  
   } 
+
+  private async startSubtitleEmit() {
+    console.log("start emiting subtitle")
+    // 创建观察器实例  
+    const observer = new MutationObserver((mutations) => {  
+      mutations.forEach((mutation) => {  
+        if (mutation.type === 'characterData' || mutation.type === 'childList') {  
+          console.log('文本发生变化:', mutation.target.textContent);  
+        }  
+      });  
+    }); 
+
+    // 配置观察选项  
+    const config = {  
+      characterData: true, // 监听文本变化  
+      childList: true,     // 监听子节点变化  
+      subtree: true,       // 监听所有后代节点  
+      characterDataOldValue: true // 记录文本变化前的值  
+    };
+
+    // 选择要观察的目标节点  
+    const targetNode = this.getYouTubeSubtitleElement()
+
+    // 开始观察  
+    observer.observe(targetNode, config);  
+
+    // 停止观察  
+    // observer.disconnect(); 
+    }
 }  
 
-// 创建管理器实例  
+
 new WordPopupManager();
 
    

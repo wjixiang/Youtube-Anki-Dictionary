@@ -43,8 +43,7 @@
   ],
 
   "host_permissions": [
-    "<all_urls>",
-    "about:blank"  
+    "<all_urls>"
   ],
   "sandbox": {  
     "pages": ["sandbox.html"]  

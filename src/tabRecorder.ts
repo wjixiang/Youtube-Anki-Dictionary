@@ -2,6 +2,7 @@ export interface audioDataFetchReq {
     backwardPeriodms: number;
     forwardPeriodms: number;
     fileName: string;
+    submitTime: number;
 }
 
 
@@ -10,6 +11,8 @@ class tabRecorder {
     state: "start" | "stop";
     recordedChunks: Blob[];
     audioContext: AudioContext;
+    startTime: number;
+    subtitle =  new subtitle()
 
     constructor(){
         this.audioContext = new AudioContext();
@@ -67,7 +70,9 @@ class tabRecorder {
                     const source = output.createMediaStreamSource(media);
                     source.connect(output.destination);
                     });
-    
+
+                this.startTime = Date.now()
+
                 sendResponse({success: true});  
                 return true;
             }  
@@ -89,7 +94,6 @@ class tabRecorder {
                         const dataArrayBuffer = await this.sendArrayBufferAudioData(request.req);  
                         sendResponse({   
                             success: true,   
-                            // data: Array.from(new Uint8Array(dataArrayBuffer))   
                         });  
                         } catch (error) {  
                         sendResponse({   
@@ -141,12 +145,6 @@ class tabRecorder {
                 console.log("backtime:",ceiledBackwardTime)
                 const currentChunkLength = this.recordedChunks.length
                 const backwardTime = ceiledBackwardTime >= currentChunkLength ? currentChunkLength : ceiledBackwardTime;  
-    
-                // 截取数据  
-                // console.log(backwardTime,this.recordedChunks.length)
-                // //.slice(this.recordedChunks.length - backwardTime  )
-
-                // const slicedChunks = this.recordedChunks.slice(1,5)
 
                 const fullBlob = new Blob(this.recordedChunks, {  
                     type: 'audio/webm;codecs=opus'  
@@ -297,6 +295,17 @@ class tabRecorder {
     //     return url
     // }
     
+}
+
+class subtitle {
+    record: {
+        word: string,
+        timeStamp: number
+    }[] = []
+
+
+
+
 }
 
 new tabRecorder()

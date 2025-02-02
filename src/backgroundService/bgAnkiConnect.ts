@@ -57,7 +57,7 @@ export default class BgAnkiConnect {
         chrome.storage.sync.get(
             {
               deck: "English::Vocabulary",
-              model: "model"
+              model: "English"
             },
             (items) => {   
                 this.Deck = items.deck
@@ -69,8 +69,8 @@ export default class BgAnkiConnect {
     // 构建 Anki 笔记  
     private buildAnkiNote(data: AnkiSyncData) {  
         this.presetSync()
-        
-        return {  
+
+        const note = {  
             
             deckName: this.Deck,  
             modelName: this.Model,  
@@ -105,7 +105,11 @@ export default class BgAnkiConnect {
                     ]
                 }
             ]
-        };  
+        } 
+
+        console.log("current note: ", note)
+        
+        return note
     } 
 
     // 检查重复笔记  

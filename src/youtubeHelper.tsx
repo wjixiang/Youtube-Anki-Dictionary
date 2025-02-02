@@ -267,33 +267,68 @@ class WordPopupManager {
     return null;  
   } 
 
+  private getSubtitle(){
+    const captionsTextSpans = document.querySelector('span.captions-text');   
+    if(captionsTextSpans) {
+      const ytpCaptionSegments = captionsTextSpans.querySelectorAll('span.ytp-caption-segment');  
+      if (ytpCaptionSegments.length > 0) return ytpCaptionSegments
+    }
+    return null
+  }
+
+  private  waitForElement(selector:string) {  
+    return new Promise(resolve => {  
+      const element = document.querySelector(selector);  
+      if (element) {  
+        return resolve(element);  
+      }  
+  
+      const observer = new MutationObserver((mutations, obs) => {  
+        const element = document.querySelector(selector);  
+        if (element) {  
+          obs.disconnect();
+          resolve(element);  
+        }  
+      });  
+  
+      observer.observe(document.body, {  
+        childList: true,  
+        subtree: true  
+      });  
+    });  
+  }
+
   private async startSubtitleEmit() {
     console.log("start emiting subtitle")
     // 创建观察器实例  
-    const observer = new MutationObserver((mutations) => {  
-      mutations.forEach((mutation) => {  
-        if (mutation.type === 'characterData' || mutation.type === 'childList') {  
-          console.log('文本发生变化:', mutation.target.textContent);  
-        }  
-      });  
+    const observer = new MutationObserver((mutations,obs) => {  
+      const captionsTextSpans = document.querySelector('span.captions-text');  
+      if(captionsTextSpans){
+        console.log("subtitle has been loaded")
+        const subtitleObs = new MutationObserver((mutations)=>{
+          mutations.forEach((mutation) => {  
+            if (mutation.type === 'characterData' || mutation.type === 'childList') {  
+              console.log('文本发生变化:', mutation.target.textContent);  
+            }  
+          });  
+        })
+        subtitleObs.observe(captionsTextSpans,config)
+      }
+      
     }); 
 
-    // 配置观察选项  
+    // configration of observation
     const config = {  
-      characterData: true, // 监听文本变化  
+      //characterData: true, // 监听文本变化  
       childList: true,     // 监听子节点变化  
       subtree: true,       // 监听所有后代节点  
       characterDataOldValue: true // 记录文本变化前的值  
     };
 
-    // 选择要观察的目标节点  
-    const targetNode = this.getYouTubeSubtitleElement()
-
-    // 开始观察  
-    observer.observe(targetNode, config);  
-
-    // 停止观察  
-    // observer.disconnect(); 
+    
+    await this.waitForElement(".ytp-caption-window-container")
+    // start observe
+    observer.observe(document.querySelector(".ytp-caption-window-container"), config);  
     }
 }  
 

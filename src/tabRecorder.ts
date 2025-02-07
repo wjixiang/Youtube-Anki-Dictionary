@@ -1,10 +1,21 @@
+import { subtitleData } from "./subtitle";
+import { startRecordReq } from './background';
+
+
 export interface audioDataFetchReq {
     backwardPeriodms: number;
     forwardPeriodms: number;
     fileName: string;
     submitTime: number;
+    backwardLines: number;
+    forwardLines: number;
 }
 
+interface timeSegment {
+    startTimeStamp: number;
+    endTimeStamp: number;
+    
+}
 
 class tabRecorder {
     mediaRecorder: MediaRecorder;
@@ -12,7 +23,6 @@ class tabRecorder {
     recordedChunks: Blob[];
     audioContext: AudioContext;
     startTime: number;
-    subtitle =  new subtitle()
 
     constructor(){
         this.audioContext = new AudioContext();
@@ -91,10 +101,13 @@ class tabRecorder {
                 console.log("getting record data request accepted");  
                 const asyncHandler = async () => {  
                     try {  
-                        const dataArrayBuffer = await this.sendArrayBufferAudioData(request.req);  
-                        sendResponse({   
-                            success: true,   
-                        });  
+                        this.getAudio(request.req)
+                            .then(()=>{
+                                sendResponse({   
+                                    success: true,   
+                                });  
+                            }) 
+                        
                         } catch (error) {  
                         sendResponse({   
                             success: false,   
@@ -102,8 +115,8 @@ class tabRecorder {
                         });  
                         }  
                     };  
-                    asyncHandler();  
-                    return true;   
+                asyncHandler();  
+                return true;   
             }
             
         });
@@ -136,15 +149,100 @@ class tabRecorder {
         this.recordedChunks = []
         window.close()    
     }
+
+    private getSubtitleData() {
+        return new Promise((resolve, reject)=>{
+            chrome.runtime.sendMessage({type: "GET_SUBTITLE"},(response:{
+                success: boolean,
+                subtitle: subtitleData[]
+            })=>{
+                if(response.success){
+                    console.log("get subtitle successfully:",response)
+                    resolve(response.subtitle)
+                }else{
+                    console.error(response)
+                    reject(response)
+                }
+                return true
+            })
+        })
+    }
+
+    getSegment(req: audioDataFetchReq) {
+        return new Promise((resolve,reject)=>{
+            this.getSubtitleData()
+                .then((subtitleDataArray)=>{
+                    // locate present segment
+                    console.log("get subtitle in segment:", subtitleDataArray)
+                    const subtitleDataList:subtitleData[] = subtitleDataArray as subtitleData[]
+
+                    for(let segment:number = 0 ; segment < subtitleDataList.length - 1; segment++){
+                        if(subtitleDataList[segment].timeStamp<=req.submitTime && subtitleDataList[segment+1].timeStamp>=req.submitTime){
+
+                            const desiredTimeSegment:timeSegment = {
+                                startTimeStamp: 0,
+                                endTimeStamp: 0
+                            }
+
+                            desiredTimeSegment.startTimeStamp = segment-req.backwardLines<0 ? subtitleDataList[0].timeStamp : subtitleDataList[segment-req.backwardLines].timeStamp
+                            
+                            if(segment+req.forwardLines<=subtitleDataList.length){
+                                //current record has included desired segment
+                                desiredTimeSegment.endTimeStamp = subtitleDataList[segment+req.forwardLines].timeStamp
+                                resolve(desiredTimeSegment)
+                    
+                            }else{
+                                const refreshSubtitleData = ()=>{
+                                    this.getSubtitleData()
+                                        .then((subtitleDataArray)=>{
+                                            const subtitleDataList:subtitleData[] = subtitleDataArray as subtitleData[]
+
+                                            if(subtitleDataList.length<segment){
+                                                setTimeout(refreshSubtitleData,500)
+                                            }else{
+                                                desiredTimeSegment.endTimeStamp = subtitleDataList[subtitleDataList.length-1].timeStamp
+                                                resolve(desiredTimeSegment)
+                                            }
+                                        })
+                                }
+                            }
+
+                            break;
+
+                        }
+                    }
+                })
+                .catch((error)=>{
+                    throw(error)
+                })
+        })
+    }
+
+   
+    getAudio(req: audioDataFetchReq) {
+        return new Promise((resolve, reject)=>{
+            this.getSegment(req)
+            .then((segment)=>{
+                const desiredSegment = segment as timeSegment
+                console.log("desiredSegment:",desiredSegment)
+                resolve(this.downloadAudio(desiredSegment,req.fileName))
+            })
+        })
+    }
     
-    async sendArrayBufferAudioData(req: audioDataFetchReq){  
+    async downloadAudio(segment:timeSegment, fileName: string){  
             try {  
-                // 计算需要截取的时间范围  
+
                 
-                const ceiledBackwardTime = Math.ceil(req.backwardPeriodms / 1000); // 转换为秒  
-                console.log("backtime:",ceiledBackwardTime)
-                const currentChunkLength = this.recordedChunks.length
-                const backwardTime = ceiledBackwardTime >= currentChunkLength ? currentChunkLength : ceiledBackwardTime;  
+
+                // 计算需要截取的时间范围  
+
+
+
+                // const ceiledBackwardTime = Math.ceil(req.backwardPeriodms / 1000); // 转换为秒  
+                // console.log("backtime:",ceiledBackwardTime)
+                // const currentChunkLength = this.recordedChunks.length
+                // const backwardTime = ceiledBackwardTime >= currentChunkLength ? currentChunkLength : ceiledBackwardTime;  
 
                 const fullBlob = new Blob(this.recordedChunks, {  
                     type: 'audio/webm;codecs=opus'  
@@ -157,10 +255,10 @@ class tabRecorder {
                 // 计算需要截取的样本数  
                 const sampleRate = audioBuffer.sampleRate;  
                 const totalDuration = audioBuffer.duration;  
-                const desiredDuration = req.backwardPeriodms / 1000; // 转换为秒  
+                // const desiredDuration = req.backwardPeriodms / 1000; // 转换为秒  
                 
                 // 确保不超出音频总长度  
-                const actualDuration = Math.min(desiredDuration, totalDuration);  
+                const actualDuration = Math.min(segment.startTimeStamp, totalDuration);  
                 const startTime = Math.max(0, totalDuration - actualDuration);  
                 
                 // 创建新的AudioBuffer来存储截取的部分  
@@ -175,10 +273,12 @@ class tabRecorder {
                     const inputData = audioBuffer.getChannelData(channel);  
                     const outputData = trimmedBuffer.getChannelData(channel);  
                     
-                    const startSample = Math.floor(startTime * sampleRate);  
+                    const startSample = Math.floor(startTime * sampleRate); 
+                    const endSample = Math.floor(segment.endTimeStamp * sampleRate)
+                    
                     const samples = outputData.length;  
                     
-                    for (let i = 0; i < samples; i++) {  
+                    for (let i = 0; i < endSample; i++) {  
                         outputData[i] = inputData[startSample + i];  
                     }  
                 }  
@@ -190,19 +290,10 @@ class tabRecorder {
                 const url = URL.createObjectURL(trimmedBlob);  
                 const downloadLink = document.createElement('a');  
                 downloadLink.href = url;  
-                downloadLink.download = req.fileName;  
+                downloadLink.download = fileName;  
                 downloadLink.click();  
                 URL.revokeObjectURL(url);  
 
-                // window.close() 
-
-                // 将 Blob 转换为 ArrayBuffer  
-                // const dataArrayBuffer = await this.blobToArrayBuffer(dataBlob)
-    
-                // console.log("record blob:", this.recordedChunks);  
-                // console.log("record data:", dataArrayBuffer); 
-                
-                // return dataArrayBuffer
             } catch (error) {  
                 console.error("send dataArrayBuffer error:",error);  
             } 
@@ -297,15 +388,6 @@ class tabRecorder {
     
 }
 
-class subtitle {
-    record: {
-        word: string,
-        timeStamp: number
-    }[] = []
 
-
-
-
-}
 
 new tabRecorder()

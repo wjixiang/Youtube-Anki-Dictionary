@@ -3,6 +3,7 @@ import BgAnkiConnect from "./backgroundService/bgAnkiConnect";
 import BgTranslationService from "./backgroundService/bgTranslationService";  
 import TabRecorderService from "./backgroundService/bgRecorder/bgTabRecorderService";
 import OffScreenRecorderService from "./backgroundService/bgRecorder/bgOffScreenService";
+import subtitle from './subtitle';
 
 
 export interface startRecordReq {  
@@ -71,6 +72,37 @@ class BackgroundService {
                     } catch (error) {
                         console.log(error)
                     }
+                    break;
+                case "GET_SUBTITLE":
+                    try {
+                        chrome.tabs.sendMessage(this.recorderService.currentTabId,{ type: "getSubtitle" }, (response) => {  
+                            try {
+                                if (response.success) {  
+                                    sendResponse({ success: true, subtitle: response.subtitle});   
+                                } else {  
+                                    sendResponse({ success: false, error: `get subtitle failed` });  
+                                }  
+                            } catch (error) {
+                                console.error("get subtitle failed:", error, "current response:", response)
+                            }
+                        })
+
+                        // chrome.runtime.sendMessage({ type: "getSubtitle" }, (response) => {  
+                        //     try {
+                        //         if (response.success) {  
+                        //             sendResponse({ success: true, subtitle: response.subtitle});   
+                        //         } else {  
+                        //             sendResponse({ success: false, error: `get subtitle failed` });  
+                        //         }  
+                        //     } catch (error) {
+                        //         console.error("get subtitle failed:", error, "current response:", response)
+                        //     }
+                        // })
+                        
+                    } catch (error) {
+                        console.log(error)
+                    }
+                    break;
                 default:  
                     console.warn('Unknown message type:', request.type);  
                     sendResponse({ success: false, error: 'Unknown message type' });  

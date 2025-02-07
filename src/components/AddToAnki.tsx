@@ -21,18 +21,27 @@ export const AddToAnki:React.FC<AnkiSyncData> = (props) => {
         );
       }, []);
 
-    let tik = 0
+    
     const fetchReq: audioDataFetchReq = {
         backwardPeriodms: backwardPeriodms,
         forwardPeriodms: forkwardPeriodms,
         fileName: "OST-" + props.Text + ".webm",
-        submitTime: Date.now()
+        submitTime: Date.now(),
+        backwardLines: 2,
+        forwardLines: 2,
     }
-    // setInterval(()=>{
-    //     fetchReq.backwardPeriodms = fetchReq.backwardPeriodms + tik * 1000
-    // },1000)
+   
 
     const fetchOriginalAudio = (fetchReq: audioDataFetchReq) => {
+        // chrome.runtime.sendMessage({type: "GET_SUBTITLE"},(response)=>{
+        //     if(response.success){
+        //         console.log("get subtitle successfully:",response)
+        //     }else{
+        //         console.error(response)
+        //     }
+        //     return true
+        // })
+
         return new Promise((resovle, reject)=>{
             setTimeout(()=>{
                 chrome.runtime.sendMessage({ type: "GET_RECORD_DATA", req: fetchReq}, response => {  

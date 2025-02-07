@@ -18,7 +18,6 @@
       {
           "matches": ["https://www.youtube.com/*"],
           "js": ["js/vendor.js", "js/content_script.js", "js/youtubeHelper.js"],
-          "css": ["app.css"],
           "all_frames": true
       }
   ],

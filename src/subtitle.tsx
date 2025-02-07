@@ -20,7 +20,7 @@ export default class subtitle {
     constructor(){
         this.startSubtitleEmit = this.startSubtitleEmit.bind(this)
         this.initSubtitleSender = this.initSubtitleSender.bind(this)
-
+        // this.startSubtitleEmit()
         this.initSubtitleSender()
     }
 
@@ -70,30 +70,35 @@ export default class subtitle {
         });  
     }
     
-    async startSubtitleEmit() {
+    async startSubtitleEmit(setSubtitleData: React.Dispatch<React.SetStateAction<subtitleData[]>>) {
         console.log("start emiting subtitle")
         // 创建观察器实例  
         const observer = new MutationObserver((mutations,obs) => {  
             const captionsTextSpans = document.querySelector('span.captions-text');  
             if(captionsTextSpans){
-            console.log("subtitle has been loaded")
-            const subtitleObs = new MutationObserver((mutations)=>{
-                mutations.forEach((mutation) => {  
-                    if ( mutation.type === 'childList') {  
-                        const currentSubtitle = this.getSubtitle()
-                        if(currentSubtitle && currentSubtitle.length>1) {
-                            if(this._record[this._record.length-1].sentence!==currentSubtitle[0].textContent){
-                                this._record.push({
-                                    sentence: currentSubtitle[0].textContent,
-                                    timeStamp: Date.now()
-                                })
-                                console.log(this.record)
+                const subtitleObs = new MutationObserver((mutations)=>{
+                    mutations.forEach((mutation) => {  
+                        if ( mutation.type === 'childList') {  
+                            const currentSubtitle = this.getSubtitle()
+                            if(currentSubtitle && currentSubtitle.length>1) {
+                                if(this._record[this._record.length-1].sentence!==currentSubtitle[0].textContent){
+                                    // this._record.push({
+                                    //     sentence: currentSubtitle[0].textContent,
+                                    //     timeStamp: Date.now()
+                                    // })
+                                    const newRecord = [...this._record,{
+                                        sentence: currentSubtitle[0].textContent,
+                                        timeStamp: Date.now()
+                                    }]
+                                    this._record = newRecord
+                                    setSubtitleData(newRecord)
+                                    console.log(newRecord)
+                                }
                             }
-                        }
-                    }  
-                });  
-            })
-            subtitleObs.observe(captionsTextSpans,config)
+                        }  
+                    });  
+                })
+                subtitleObs.observe(captionsTextSpans,config)
             }
             
         }); 

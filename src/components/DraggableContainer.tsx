@@ -62,8 +62,8 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({ children }) => 
         boxShadow: '0 4px 6px rgba(0,0,0,0.1)',  
         cursor: isDragging ? 'grabbing' : 'grab',  
         userSelect: 'none',  
-        maxWidth: '300px',  
-        maxHeight: '500px',  
+        maxWidth: '500px',  
+        maxHeight: '200px',  
         overflow: 'auto'  
       }}  
       onMouseDown={handleMouseDown}  

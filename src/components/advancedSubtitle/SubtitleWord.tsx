@@ -1,5 +1,8 @@
 import React, { useState } from "react"  
 import styled, { keyframes, css } from "styled-components"  
+import DictContainer from "../YoudaoEZContainer";
+import { createRoot } from "react-dom/client";
+import WordPopup from "../WordPopup";
 
 interface subtitleWordProps {  
     word: string;  
@@ -68,10 +71,86 @@ const SubtitleWord: React.FC<subtitleWordProps> = ({ word, onSelect }) => {
         setIsHovered(false);  
     };  
 
-    const handleClick = () => {  
+    // const createPopup = (word: string | null,sentence: string) => {  
+    //     // 移除之前的弹窗  
+        
+
+    //     // 创建新的弹窗元素  
+    //     const popupElement = document.createElement('div');  
+    //     popupElement.id = 'shift-popup';  
+    //     popupElement.setAttribute('data-type', 'chrome-extension-popup');  
+
+    //     // 设置位置  
+    //     // Object.assign(popupElement.style, {  
+    //     //   position: 'fixed',  
+    //     //   left: `${this.mouseX}px`,  
+    //     //   top: `${this.mouseY}px`  
+    //     // });  
+
+    //     // 将元素添加到文档  
+    //     document.body.appendChild(popupElement);  
+    //     console.log(popupElement)
+
+    //     // 创建 React 根  
+    //     const root = createRoot(popupElement);  
+
+    //     // 渲染 React 组件  
+    //     root.render(  
+    //     <React.StrictMode>  
+    //         <WordPopup   
+    //         word={word || ''} 
+    //         sentence={sentence}  
+    //         />  
+    //     </React.StrictMode>  
+    //     );  
+        
+    // }
+
+    // const queryWord = () => {
+
+    // }
+
+    const createPopup = (word: string | null, sentence: string) => {  
+        // 移除之前的弹窗  
+        const existingPopup = document.getElementById('shift-popup');  
+        if (existingPopup) {  
+            existingPopup.remove();  
+        }  
+    
+        // 创建新的弹窗元素  
+        const popupElement = document.createElement('div');  
+        popupElement.id = 'shift-popup';  
+        popupElement.setAttribute('data-type', 'chrome-extension-popup');  
+    
+        // 设置位置  
+        popupElement.style.position = 'fixed';  
+        popupElement.style.left = '100px'; // 静态位置，或根据需要动态设置  
+        popupElement.style.top = '100px'; // 静态位置，或根据需要动态设置  
+        popupElement.style.zIndex = '99999'; // 确保在其他元素之上  
+    
+        // 将元素添加到文档  
+        document.body.appendChild(popupElement);  
+        console.log(popupElement);  
+    
+        // 创建 React 根  
+        const root = createRoot(popupElement);  
+    
+        // 渲染 React 组件  
+        root.render(  
+            <React.StrictMode>  
+                <WordPopup   
+                word={word || ''}   
+                sentence={sentence}  
+                />  
+            </React.StrictMode>  
+        );  
+    }
+
+    const handleClick = ( ) => {  
         const newSelectedState = !isSelected;  
         setIsSelected(newSelectedState);  
         onSelect?.(word);  
+        createPopup(word,"")
     };  
 
     return (  

@@ -8,55 +8,7 @@ import SubtiltePicker from './components/advancedSubtitle/SubtitlePicker';
 import DraggableContainer from './components/DraggableContainer';
 
 
-interface PopupProps {  
-  word: string; 
-  sentence: string; 
-  onTranslate?: () => void;  
-  onSearch?: () => void;  
-}  
 
-function WordPopup({ word, sentence, onTranslate, onSearch }: PopupProps) {  
-  return (  
-    <div style={{  
-      background: 'white',  
-      border: '1px solid black',  
-      padding: '10px',  
-    }}>  
-      <div>  
-        <h3>select: <strong>{word || '未选中'}</strong></h3>  
-        <h3>subtitle: <strong>{sentence || '未选中'}</strong></h3>  
-        <div className="actions">  
-          <button   
-            onClick={onTranslate}   
-            style={{ margin: '5px' }}  
-          >  
-            翻译  
-          </button>  
-          <button   
-            onClick={onSearch}   
-            style={{ margin: '5px' }}  
-          >  
-            搜索  
-          </button>  
-        </div>  
-        
-        {word && (  
-          <DictContainer  
-            dictionary={new youdao_en_t_zh({  
-              maxexample: 2  
-            })}  
-            query={{  
-              queryWord: word,  
-              sourceLang: "en",  
-              targetLang: "zh"  
-            }} 
-            sentence={sentence}
-          />  
-        )}  
-      </div>  
-    </div>  
-  );  
-}  
 
 // class WordPopupManager {  
 //   private popupElement: HTMLDivElement | null = null;  

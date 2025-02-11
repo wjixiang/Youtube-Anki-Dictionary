@@ -1,12 +1,15 @@
 import { AnkiSyncData } from "@/backgroundService/bgAnkiConnect";
-import { CirclePlus } from "lucide-react";
+import { CirclePlus, CheckCircle2, XCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { audioDataFetchReq } from '../tabRecorder';
+import { Oval } from 'react-loader-spinner'
 
+type sycnStateType  = "ready" |"running"| "finished" | "failed"
 
 export const AddToAnki:React.FC<AnkiSyncData> = (props) => {
     const [backwardPeriodms,setBackwardPeriodms] = useState<number>(4000)
     const [forkwardPeriodms,setForwardPeriodms] = useState<number>(4000)
+    const [syncState,setSyncState] = useState<sycnStateType>("ready")
 
     useEffect(() => {
         chrome.storage.sync.get(
@@ -64,9 +67,10 @@ export const AddToAnki:React.FC<AnkiSyncData> = (props) => {
     }
 
     const syncToAnki = async ( ) => {
+        setSyncState("running")
 
-        const audioFetchRes = await fetchOriginalAudio(fetchReq)
-        console.log("store media successfully", audioFetchRes)
+        // const audioFetchRes = await fetchOriginalAudio(fetchReq)
+        // console.log("store media successfully", audioFetchRes)
 
         const syncData: AnkiSyncData = {
             Text: props.Text,  
@@ -88,14 +92,45 @@ export const AddToAnki:React.FC<AnkiSyncData> = (props) => {
         chrome.runtime.sendMessage({  
             type: 'ANKI_SYNC',  
             data: syncData 
+        },(response)=>{
+            if(response.success===true){
+                setSyncState("finished")
+            }else{
+                setSyncState("failed")
+            }
         });
     }
 
-    return (<>
-        <CirclePlus
-            size={25}
-            color="#37AFE1"
-            onClick={()=>syncToAnki()}
-        />
-    </>)
+    switch (syncState) {
+        case "ready":
+            return (<>
+                <CirclePlus
+                    height={25}
+                    width={25}
+                    color="#37AFE1"
+                    onClick={()=>syncToAnki()}
+                />
+            </>)
+        case "running":
+            return (<Oval  
+                height={25}  
+                width={25}  
+                color="#4fa94d"  
+                visible={true}  
+              /> )
+        case "finished":
+            return(<CheckCircle2
+                height={25}
+                width={25}
+                color="#06FF49"
+            />)
+        case "failed":
+            return(<XCircle
+                height={25}
+                width={25}
+                color="#FF0133"
+            />)
+        default:
+            break;
+    }
 }

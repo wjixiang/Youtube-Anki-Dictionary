@@ -8,6 +8,8 @@ interface subtitlePickerProps {
 
 const SubtiltePicker: React.FC<subtitlePickerProps> = (props) => {
     const [subtitleData,setSubtitleData] = useState(props.subtitle.record)
+    
+
     useEffect(() => {  
         // 在 useEffect 中启动字幕监听  
         props.subtitle.startSubtitleEmit(setSubtitleData);  

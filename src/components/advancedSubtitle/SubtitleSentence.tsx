@@ -3,11 +3,19 @@ import React from "react";
 import { subtitleData } from '../../subtitle';
 import { createRoot } from "react-dom/client";
 import WordPopup from "../WordPopup";
+import styled from "styled-components";
 
 
 interface SubtitleSentenceProps {
     sententce: subtitleData;
 }
+
+const SentenceWraper = styled.div`
+    border-bottom: 1px solid;
+    padding-bottom: 3px;
+    padding-top: 2px;
+    border-bottom-color: gray;
+`
 
 const SubtitleSentence: React.FC<SubtitleSentenceProps> = (props) => {
     const splitedWords = props.sententce.sentence.split(" ")
@@ -49,7 +57,9 @@ const SubtitleSentence: React.FC<SubtitleSentenceProps> = (props) => {
         }
 
     return <div>
-        {splitedWords.map(word => <SubtitleWord word={word} onSelect={createPopup}/>)}
+        <SentenceWraper>
+            {splitedWords.map(word => <SubtitleWord word={word} onSelect={createPopup}/>)}
+        </SentenceWraper>
     </div>
 }
 

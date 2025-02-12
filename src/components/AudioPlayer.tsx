@@ -1,4 +1,5 @@
 import React, { useState, useRef, FC } from 'react';  
+import styled from 'styled-components';  
 import { Play, Pause } from 'lucide-react';  
 
 interface AudioPlayerProps {  
@@ -6,9 +7,32 @@ interface AudioPlayerProps {
   className?: string;  
 }  
 
-const AudioPlayer: FC<AudioPlayerProps> = ({   
-  src,   
-  className = ''   
+const PlayerContainer = styled.div`  
+  display: flex;  
+  justify-content: center;  
+`;  
+
+const PlayerButton = styled.button`  
+  border-radius: 50%;  
+  border-color: #37AFE1;
+  transition: background-color 0.2s;  
+  display: flex;  
+  align-items: center;  
+  justify-content: center;  
+  padding: 8px;  
+
+  &:hover {  
+    background-color: #374151;  // bg-gray-100 equivalent  
+  }  
+`;  
+
+const PlayerIcon = styled.div`  
+  //color: #374151;  // text-gray-700 equivalent  
+`;  
+
+const AudioPlayer: FC<AudioPlayerProps> = ({  
+  src,  
+  className = ''  
 }) => {  
   const [isPlaying, setIsPlaying] = useState<boolean>(false);  
   const audioRef = useRef<HTMLAudioElement>(null);  
@@ -29,24 +53,24 @@ const AudioPlayer: FC<AudioPlayerProps> = ({
   };  
 
   return (  
-    <div className="flex justify-center">  
-      <audio   
-        ref={audioRef}   
+    <PlayerContainer>  
+      <audio  
+        ref={audioRef}  
         src={src}  
         onEnded={handleEnded}  
       />  
-      <button   
-        onClick={togglePlay}   
-        className="rounded-full hover:bg-gray-100 transition-colors space-x-1"  
+      <PlayerButton  
+        onClick={togglePlay}  
         aria-label={isPlaying ? 'Pause' : 'Play'}  
+        color='#37AFE1'
       >  
         {isPlaying ? (  
-          <Pause className="text-gray-700" />  
+          <PlayerIcon as={Pause} color='#37AFE1' />  
         ) : (  
-          <Play className="text-gray-700" />  
+          <PlayerIcon as={Play} color='#37AFE1'/>  
         )}  
-      </button>  
-    </div>  
+      </PlayerButton>  
+    </PlayerContainer>  
   );  
 };  
 

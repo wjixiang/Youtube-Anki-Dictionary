@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';  
 import DictContainer from "./YoudaoEZContainer";  
 import youdao_en_t_zh from '../dictionary/en_to_zh[web]/youdao_en_t_zh';  
+import React from 'react';
 
 interface PopupProps {  
     word: string;   

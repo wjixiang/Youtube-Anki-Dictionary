@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import subtitle from '../../subtitle';
-import SubtitleSentence from './SubtitleSentence';
+import { SubitlteDisplayBox } from './SubtitleDisplayBox';
 
-interface subtitlePickerProps {
+export interface subtitlePickerProps {
     subtitle: subtitle
 }
 
@@ -11,10 +11,9 @@ const SubtiltePicker: React.FC<subtitlePickerProps> = (props) => {
     
 
     useEffect(() => {  
-        // 在 useEffect 中启动字幕监听  
+        // start to monitor subtitle 
         props.subtitle.startSubtitleEmit(setSubtitleData);  
 
-        // 清理函数  
         return () => {  
             // props.subtitle.stopSubtitleEmit(); 
         };  
@@ -25,7 +24,7 @@ const SubtiltePicker: React.FC<subtitlePickerProps> = (props) => {
     },[subtitleData])
 
     return <>
-        {subtitleData.map(data=><SubtitleSentence sententce={data}/>)}
+        <SubitlteDisplayBox subtitleDataList={subtitleData}/>
     </>
 }
 

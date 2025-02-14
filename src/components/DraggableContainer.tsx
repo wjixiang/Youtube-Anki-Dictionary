@@ -55,16 +55,16 @@ const DraggableContainer: React.FC<DraggableContainerProps> = ({ children }) => 
         left: `${position.x}px`,  
         top: `${position.y}px`,  
         zIndex: 9999,  
-        backgroundColor: 'white',  
-        border: '1px solid #ccc',  
-        borderRadius: '8px',  
+        // backgroundColor: 'white',  
+        // border: '1px solid #ccc',  
+        // borderRadius: '8px',  
         padding: '10px',  
-        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',  
+        // boxShadow: '0 4px 6px rgba(0,0,0,0.1)',  
         cursor: isDragging ? 'grabbing' : 'grab',  
         userSelect: 'none',  
-        maxWidth: '500px',  
-        maxHeight: '200px',  
-        overflow: 'auto'  
+        // maxWidth: '500px',  
+        // maxHeight: '200px',  
+        // overflow: 'auto'  
       }}  
       onMouseDown={handleMouseDown}  
     >  

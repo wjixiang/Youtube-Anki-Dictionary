@@ -1,11 +1,9 @@
 import React, { useState } from "react"  
 import styled, { keyframes, css } from "styled-components"  
-import DictContainer from "../YoudaoEZContainer";
-import { createRoot } from "react-dom/client";
-import WordPopup from "../WordPopup";
 
 interface subtitleWordProps {  
     word: string;  
+    query: (word:string) => void;
     onSelect?: (word: string) => void;  
 }  
 
@@ -59,7 +57,7 @@ const StyledWordContainer = styled.div<{
     }  
 `  
 
-const SubtitleWord: React.FC<subtitleWordProps> = ({ word, onSelect }) => {  
+const SubtitleWord: React.FC<subtitleWordProps> = ({ word, onSelect, query }) => {  
     const [isHovered, setIsHovered] = useState(false)  
     const [isSelected, setIsSelected] = useState(false)  
 
@@ -74,9 +72,11 @@ const SubtitleWord: React.FC<subtitleWordProps> = ({ word, onSelect }) => {
     const handleClick = ( ) => {  
         const newSelectedState = !isSelected;  
         setIsSelected(newSelectedState);  
+        query(word)
         onSelect?.(word);  
         // createPopup(word,"")
     };  
+
 
     return (  
         <StyledWordContainer  

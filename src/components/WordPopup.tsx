@@ -6,14 +6,15 @@ import React from 'react';
 interface PopupProps {  
     word: string;   
     sentence: string;   
+    isPanelVisible: boolean;
     onTranslate?: () => void;  
     onSearch?: () => void;  
     onClose: () => void; // 添加关闭回调函数  
 }  
   
-export default function WordPopup({ word, sentence, onClose }: PopupProps) {  
+export default function WordPopup({ word, sentence, onClose , isPanelVisible}: PopupProps) {  
     const popupRef = useRef<HTMLDivElement>(null);  
-    const [isVisible,setIsVisible] = useState(true)
+    const [isVisible,setIsVisible] = useState(isPanelVisible)
 
     useEffect(() => {  
         // 处理点击事件的函数  
@@ -32,6 +33,10 @@ export default function WordPopup({ word, sentence, onClose }: PopupProps) {
             document.removeEventListener('mousedown', handleClickOutside);  
         };  
     }, [onClose]);  
+
+    useEffect(()=> {
+        setIsVisible(isPanelVisible)
+    },[isPanelVisible])
 
     return ( isVisible && 
         <div   

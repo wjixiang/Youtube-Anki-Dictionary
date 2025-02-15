@@ -38,7 +38,6 @@ export default class subtitle {
         })
     }
 
-
     getSubtitle(){
         const captionsTextSpans = document.querySelector('span.captions-text');   
         if(captionsTextSpans) {
@@ -74,7 +73,7 @@ export default class subtitle {
         console.log("start emiting subtitle")
         // 创建观察器实例  
         const observer = new MutationObserver((mutations,obs) => {  
-            const captionsTextSpans = document.querySelector('span.captions-text');  
+            const captionsTextSpans = document.querySelector('#ytd-player');  // wait for subtitle element
             if(captionsTextSpans){
                 const subtitleObs = new MutationObserver((mutations)=>{
                     mutations.forEach((mutation) => {  
@@ -82,10 +81,7 @@ export default class subtitle {
                             const currentSubtitle = this.getSubtitle()
                             if(currentSubtitle && currentSubtitle.length>1) {
                                 if(this._record[this._record.length-1].sentence!==currentSubtitle[0].textContent){
-                                    // this._record.push({
-                                    //     sentence: currentSubtitle[0].textContent,
-                                    //     timeStamp: Date.now()
-                                    // })
+        
                                     const newRecord = [...this._record,{
                                         sentence: currentSubtitle[0].textContent,
                                         timeStamp: Date.now()

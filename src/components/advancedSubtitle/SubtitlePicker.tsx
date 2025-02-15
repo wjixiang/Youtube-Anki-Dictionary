@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';  
 import styled, { css } from 'styled-components';  
 import subtitle from '../../subtitle';  
-import { SubitlteDisplayBox } from './SubtitleDisplayBox';  
+import  SubtitleDisplayBox  from './SubtitleDisplayBox';  
 import WordPopup from '../WordPopup';  
 
 export interface subtitlePickerProps {  
@@ -108,7 +108,7 @@ const SubtiltePicker: React.FC<subtitlePickerProps> = (props) => {
             {searchPanel}  
             
             <SubtitleBoxContainer>  
-                <SubitlteDisplayBox  
+                <SubtitleDisplayBox  
                     subtitleDataList={subtitleData}  
                     setQueryWord={setSelectedWord}  
                     setSearchPanelVisible={setIsWordPanelVisible}  

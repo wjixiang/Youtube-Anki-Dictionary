@@ -32,7 +32,6 @@ const PlayerIcon = styled.div`
 
 const AudioPlayer: FC<AudioPlayerProps> = ({  
   src,  
-  className = ''  
 }) => {  
   const [isPlaying, setIsPlaying] = useState<boolean>(false);  
   const audioRef = useRef<HTMLAudioElement>(null);  

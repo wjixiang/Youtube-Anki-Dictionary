@@ -34,6 +34,8 @@ const TransitionContainer = styled.div`
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  
     margin: 10px;  
     max-width: 800px;  
+    max-height: 400px;
+    overflow-y: auto;
 `;  
 
 const Header = styled.div`  

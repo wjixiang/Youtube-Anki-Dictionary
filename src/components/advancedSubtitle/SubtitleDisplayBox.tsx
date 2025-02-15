@@ -14,7 +14,7 @@ export const SubitlteDisplayBox = ({subtitleDataList, setQueryWord, setQuerySent
 
     return ( 
         <StyledContainer>
-            {subtitleDataList.map(data=><SubtitleSentence 
+            {subtitleDataList.reverse().map(data=><SubtitleSentence 
                 sententce={data} 
                 selectWord={setQueryWord} 
                 setQueryWord={setQueryWord} 

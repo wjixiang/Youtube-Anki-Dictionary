@@ -7,7 +7,7 @@ interface DraggableContainerProps {
 
 const DraggableContainer: React.FC<DraggableContainerProps> = ({ children }) => {  
   const [isDragging, setIsDragging] = useState(false);  
-  const [position, setPosition] = useState({ x: 50, y: 50 });  
+  const [position, setPosition] = useState({ x: window.screen.width/4, y: window.screen.availHeight/5 * 3 });  
   const [offset, setOffset] = useState({ x: 0, y: 0 });  
   const containerRef = useRef<HTMLDivElement>(null);  
 

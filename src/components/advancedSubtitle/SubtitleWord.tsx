@@ -25,6 +25,7 @@ const StyledWordContainer = styled.div<{
     $isSelected: boolean;  
 }>`  
     display: inline-block;  
+    font-size: 16px;
     border-radius: 0.375rem;  
     border: 2px solid ${props =>  
         props.$isSelected ? '#3b82f6' :  

@@ -79,7 +79,21 @@ export default class subtitle {
                     mutations.forEach((mutation) => {  
                         if ( mutation.type === 'childList') {  
                             const currentSubtitle = this.getSubtitle()
-                            if(currentSubtitle && currentSubtitle.length>1) {
+                            
+                            // console.log("current subtitle",currentSubtitle)
+
+                            if(currentSubtitle && currentSubtitle.length>1) { //实时型字幕
+                                if(this._record[this._record.length-1].sentence!==currentSubtitle[0].textContent){
+        
+                                    const newRecord = [...this._record,{
+                                        sentence: currentSubtitle[0].textContent,
+                                        timeStamp: Date.now()
+                                    }]
+                                    this._record = newRecord
+                                    setSubtitleData(newRecord)
+                                    console.log(newRecord)
+                                }
+                            }else if(currentSubtitle && currentSubtitle.length === 1){ // 静态型字幕
                                 if(this._record[this._record.length-1].sentence!==currentSubtitle[0].textContent){
         
                                     const newRecord = [...this._record,{

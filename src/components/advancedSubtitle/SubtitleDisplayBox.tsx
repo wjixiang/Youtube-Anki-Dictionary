@@ -49,6 +49,7 @@ const StyledContainer = styled.div`
     border-radius: 8px;  
     display: flex;  
     flex-direction: column;  
+    max-width: 600px;
     
     // 使滚动条始终在底部  
     scroll-behavior: smooth;  

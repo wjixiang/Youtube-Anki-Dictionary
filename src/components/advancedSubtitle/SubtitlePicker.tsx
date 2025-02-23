@@ -65,9 +65,9 @@ const SubtiltePicker: React.FC<subtitlePickerProps> = (props) => {
         };  
     }, []);   
 
-    useEffect(() => {  
-        console.log('Subtitle data updated:', subtitleData);  
-    }, [subtitleData]);  
+    // useEffect(() => {  
+    //     console.log('Subtitle data updated:', subtitleData);  
+    // }, [subtitleData]);  
 
     useEffect(() => {  
         const handleClickOutside = (event: MouseEvent) => {  

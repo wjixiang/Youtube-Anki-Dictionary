@@ -93,7 +93,7 @@ export default class subtitle {
                                             }]
                                             this._record = newRecord
                                             setSubtitleData(newRecord)
-                                            console.log(newRecord)
+                                            // console.log(newRecord)
                                         }
                                     }else if(this._record.length==1){
                                         const newRecord = [...this._record,{
@@ -102,7 +102,7 @@ export default class subtitle {
                                         }]
                                         this._record = newRecord
                                         setSubtitleData(newRecord)
-                                        console.log(newRecord)
+                                        // console.log(newRecord)
                                     }
                                 }
 
@@ -118,19 +118,26 @@ export default class subtitle {
                                     }]
                                     this._record = newRecord
                                     setSubtitleData(newRecord)
-                                    console.log(newRecord)
+                                    // console.log(newRecord)
                                 }
 
                             }else if(currentSubtitle && currentSubtitle.length === 1){ // 静态型字幕
                                 if(this._record[this._record.length-1].sentence!==currentSubtitle[0].textContent){
-        
-                                    const newRecord = [...this._record,{
-                                        sentence: currentSubtitle[0].textContent,
-                                        timeStamp: Date.now()
-                                    }]
-                                    this._record = newRecord
-                                    setSubtitleData(newRecord)
-                                    console.log(newRecord)
+                                    
+                                    if(currentSubtitle[1].textContent.match(this._record[this._record.length-1].sentence)){
+                                        const changeRecord = [...this._record]
+                                        changeRecord[this._record.length-1].sentence = currentSubtitle[1].textContent
+                                        this._record = changeRecord
+                                        setSubtitleData(changeRecord)
+                                    }else{
+                                        this._record = [...this._record,{
+                                            sentence: currentSubtitle[0].textContent,
+                                            timeStamp: Date.now()
+                                        }]
+                                        setSubtitleData(this._record)
+                                    }
+                                    
+                                
                                 }
                             }
                         }  

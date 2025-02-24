@@ -42,14 +42,14 @@ const SubtitleDisplayBox = ({
 }  
 
 const StyledContainer = styled.div`  
-    max-height: 110px;  
+    max-height: 130px;  
     overflow-y: auto; // 只允许垂直滚动  
     background-color: white;  
     border: 1px solid #ccc;  
     border-radius: 8px;  
     display: flex;  
     flex-direction: column;  
-    width: 600px;
+    min-width: 100px;
     
     // 使滚动条始终在底部  
     scroll-behavior: smooth;  

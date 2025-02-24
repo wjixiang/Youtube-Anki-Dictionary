@@ -87,21 +87,21 @@ export default class subtitle {
 
                                     if(this._record.length>2){
                                         if(this._record[this._record.length-2].sentence!==currentSubtitle[0].textContent){
-                                            const newRecord = [...this._record,{
+                                           
+                                            this._record = [...this._record,{
                                                 sentence: currentSubtitle[0].textContent,
                                                 timeStamp: Date.now()
                                             }]
-                                            this._record = newRecord
-                                            setSubtitleData(newRecord)
+                                            setSubtitleData(this._record.slice(this._record.length-3,this._record.length-1))
                                             // console.log(newRecord)
                                         }
                                     }else if(this._record.length==1){
-                                        const newRecord = [...this._record,{
+                                        
+                                        this._record = [...this._record,{
                                             sentence: currentSubtitle[0].textContent,
                                             timeStamp: Date.now()
                                         }]
-                                        this._record = newRecord
-                                        setSubtitleData(newRecord)
+                                        setSubtitleData(this._record.slice(this._record.length-3,this._record.length-1))
                                         // console.log(newRecord)
                                     }
                                 }
@@ -110,31 +110,32 @@ export default class subtitle {
                                     const changeRecord = [...this._record]
                                     changeRecord[this._record.length-1].sentence = currentSubtitle[1].textContent
                                     this._record = changeRecord
-                                    setSubtitleData(changeRecord)
+                                    setSubtitleData(this._record.slice(this._record.length-3,this._record.length))
                                 }else{
                                     const newRecord = [...this._record,{
                                         sentence: currentSubtitle[1].textContent,
                                         timeStamp: Date.now()
                                     }]
                                     this._record = newRecord
-                                    setSubtitleData(newRecord)
+                                    setSubtitleData(this._record.slice(this._record.length-3,this._record.length-1))
                                     // console.log(newRecord)
                                 }
 
                             }else if(currentSubtitle && currentSubtitle.length === 1){ // 静态型字幕
+                                // console.log("the subtitle:", currentSubtitle[0])
                                 if(this._record[this._record.length-1].sentence!==currentSubtitle[0].textContent){
                                     
-                                    if(currentSubtitle[1].textContent.match(this._record[this._record.length-1].sentence)){
+                                    if(currentSubtitle[0].textContent.match(this._record[this._record.length-1].sentence)){
                                         const changeRecord = [...this._record]
-                                        changeRecord[this._record.length-1].sentence = currentSubtitle[1].textContent
+                                        changeRecord[this._record.length-1].sentence = currentSubtitle[0].textContent
                                         this._record = changeRecord
-                                        setSubtitleData(changeRecord)
+                                        setSubtitleData(this._record.slice(this._record.length-2,this._record.length))
                                     }else{
                                         this._record = [...this._record,{
                                             sentence: currentSubtitle[0].textContent,
                                             timeStamp: Date.now()
                                         }]
-                                        setSubtitleData(this._record)
+                                        setSubtitleData(this._record.slice(this._record.length-2,this._record.length))
                                     }
                                     
                                 
